@@ -88,8 +88,10 @@ export function ThemeProvider({ children }) {
     if (typeof document !== 'undefined') {
       document.body.style.backgroundColor = colors.bg;
       document.documentElement.style.backgroundColor = colors.bg;
+      document.body.style.color = colors.text;
+      document.documentElement.setAttribute('data-theme', themeMode);
     }
-  }, [colors.bg]);
+  }, [colors.bg, colors.text, themeMode]);
 
   return (
     <ThemeContext.Provider value={{ theme: themeMode, isDark: themeMode === 'dark', toggleTheme, colors }}>

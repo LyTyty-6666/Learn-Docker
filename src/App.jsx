@@ -393,6 +393,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'transparent',
     gap: 4,
   },
   toggleBtnActive: {

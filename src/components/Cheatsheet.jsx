@@ -87,7 +87,7 @@ export default function Cheatsheet({ onExecuteCommand }) {
 
               <View style={styles.itemsList}>
                 {cat.items.map((item, itemIdx) => (
-                  <View key={itemIdx} style={[styles.cmdRow, { borderBottomColor: colors.cardBorder }]}>
+                  <View key={itemIdx} style={[styles.cmdRow, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
                     <View style={styles.cmdInfo}>
                       <Text style={[styles.cmdText, { color: colors.text }]} selectable={true}>
                         {item.cmd}
@@ -106,7 +106,7 @@ export default function Cheatsheet({ onExecuteCommand }) {
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        style={[styles.copyBtn, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+                        style={[styles.copyBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
                         onPress={() => handleCopy(item.cmd)}
                       >
                         <Copy size={11} color={colors.textMuted} />

@@ -281,12 +281,12 @@ export default function Visualizer({
                         {/* Stats mini bar */}
                         <View style={styles.statsMini}>
                           <View style={styles.statMiniItem}>
-                            <Cpu size={11} color="#8b949e" />
-                            <Text style={styles.statMiniText}>CPU {c.stats?.cpu || '0.1%'}</Text>
+                            <Cpu size={11} color={colors.textMuted} />
+                            <Text style={[styles.statMiniText, { color: colors.textMuted }]}>CPU {c.stats?.cpu || '0.1%'}</Text>
                           </View>
                           <View style={styles.statMiniItem}>
-                            <HardDrive size={11} color="#8b949e" />
-                            <Text style={styles.statMiniText}>RAM {c.stats?.mem?.split('/')[0] || '14MB'}</Text>
+                            <HardDrive size={11} color={colors.textMuted} />
+                            <Text style={[styles.statMiniText, { color: colors.textMuted }]}>RAM {c.stats?.mem?.split('/')[0] || '14MB'}</Text>
                           </View>
                         </View>
 
@@ -606,6 +606,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(88, 166, 255, 0.15)',
+    borderWidth: 1,
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 4,

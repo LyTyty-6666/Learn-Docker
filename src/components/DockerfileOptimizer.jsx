@@ -99,12 +99,12 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
         {/* Editor & Actions */}
         <View style={[styles.editorCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={[styles.editorToolbar, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
-            <View style={styles.fileTab}>
+            <View style={[styles.fileTab, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
               <FileCode size={12} color={colors.primary} />
               <Text style={[styles.fileTabText, { color: colors.text }]}>Dockerfile</Text>
               {isOptimized && (
-                <View style={styles.optimizedBadge}>
-                  <Text style={styles.optimizedBadgeText}>OPTIMIZED</Text>
+                <View style={[styles.optimizedBadge, { backgroundColor: colors.successBg }]}>
+                  <Text style={[styles.optimizedBadgeText, { color: colors.success }]}>OPTIMIZED</Text>
                 </View>
               )}
             </View>

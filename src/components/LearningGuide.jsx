@@ -113,7 +113,7 @@ export default function LearningGuide({ onExecuteCommand }) {
               )}
 
               {sec.callout && (
-                <View style={[styles.calloutBox, { backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#F0F5FF', borderColor: isDark ? '#388bfd33' : '#ADC6FF' }]}>
+                <View style={[styles.calloutBox, { backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#F0F5FF', borderLeftColor: colors.primary }]}>
                   <Info size={14} color={colors.primary} />
                   <Text style={[styles.calloutText, { color: colors.text }]}>{sec.callout}</Text>
                 </View>

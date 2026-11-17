@@ -94,10 +94,10 @@ export default function Doctor({
             {t('portDoctorDesc', "Wondering why a port isn't connecting? Enter any host port to diagnose its status against your Docker sandbox.")}
           </Text>
 
-          <View style={styles.portInputRow}>
+          <View style={[styles.portInputRow, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
             <Text style={[styles.portInputPrefix, { color: colors.textMuted }]}>http://localhost:</Text>
             <TextInput
-              style={[styles.portInput, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder, color: colors.text }]}
+              style={[styles.portInput, { color: colors.text }]}
               value={testPortInput}
               onChangeText={setTestPortInput}
               onSubmitEditing={handleDiagnosePort}

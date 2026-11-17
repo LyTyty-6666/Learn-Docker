@@ -175,7 +175,7 @@ export default function Labs({
                 {/* Hint & Run Buttons */}
                 <View style={styles.stepActionRow}>
                   <TouchableOpacity
-                    style={[styles.hintToggle, { backgroundColor: colors.cardSubBg }]}
+                    style={[styles.hintToggle, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
                     onPress={() => setShowHintStepId(isHintOpen ? null : step.id)}
                   >
                     <HelpCircle size={12} color={colors.textMuted} />
@@ -441,6 +441,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
   },
   hintToggleText: {
     color: '#8b949e',
