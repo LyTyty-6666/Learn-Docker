@@ -177,14 +177,18 @@ export function useDockerSimulator() {
   <p>Connection established from Host Port ${port} to Container Port 80.</p>
 </body>
 </html>`;
-        } else if (matchedContainer.image.includes('node')) {
+        } else if (matchedContainer.image.includes('node') || matchedContainer.image.includes('app') || matchedContainer.name.includes('app')) {
+          const hasLiveReload = matchedContainer.volumes && matchedContainer.volumes.some(v => v.includes('pwd') || v.includes('app') || v.includes('/'));
           content = JSON.stringify({
             status: 'online',
             service: matchedContainer.name,
             version: '1.0.0',
-            framework: 'Express.js',
+            liveReload: hasLiveReload ? 'ACTIVE (Host Bind-Mount Live Sync)' : 'INACTIVE',
+            framework: 'Express.js / Node.js',
             timestamp: new Date().toISOString(),
-            message: 'Hello from Node.js Dockerized Server!',
+            message: hasLiveReload
+              ? '⚡ Hot Reload Active: Code changes on host are instantly reflected inside Docker!'
+              : 'Hello from Dockerized Application Server!',
           }, null, 2);
         } else if (matchedContainer.image.includes('python')) {
           content = JSON.stringify({
@@ -371,7 +375,13 @@ export function useDockerSimulator() {
           } else if (t === '--network' && tokens[i + 1]) {
             network = tokens[++i];
           } else if (t === '-v' && tokens[i + 1]) {
-            volumesList.push(tokens[++i].split(':')[0]);
+            const rawV = tokens[++i];
+            volumesList.push(rawV.split(':')[0]);
+            volumesList.push(rawV);
+          } else if (t.startsWith('-v=')) {
+            const rawV = t.split('=')[1];
+            volumesList.push(rawV.split(':')[0]);
+            volumesList.push(rawV);
           } else if (t === '-e' && tokens[i + 1]) {
             envList.push(tokens[++i]);
           } else if (!t.startsWith('-')) {
@@ -651,6 +661,79 @@ export function useDockerSimulator() {
               return next;
             });
             responseLines = [{ id: generateId(), type: 'output', text: volName }];
+          }
+        }
+      } else if (action === 'build') {
+        let tag = 'my-app:latest';
+        const tagIdx = tokens.findIndex(t => t === '-t' || t === '--tag');
+        if (tagIdx !== -1 && tokens[tagIdx + 1]) {
+          tag = tokens[tagIdx + 1];
+          if (!tag.includes(':')) tag = `${tag}:latest`;
+        }
+
+        const newImage = {
+          name: tag,
+          size: '142MB',
+          created: 'Just now',
+          description: 'Custom application container image built from local Dockerfile',
+        };
+
+        setImages(prev => {
+          const next = [...prev.filter(img => img.name !== tag), newImage];
+          return next;
+        });
+
+        checkLabProgress(containers, networks, volumes, cmd);
+
+        responseLines = [
+          { id: generateId(), type: 'info', text: `[+] Building 1.8s (8/8) FINISHED                         docker:default` },
+          { id: generateId(), type: 'output', text: ` => [internal] load build definition from Dockerfile                   0.0s` },
+          { id: generateId(), type: 'output', text: ` => [internal] load .dockerignore                                      0.0s` },
+          { id: generateId(), type: 'output', text: ` => [1/4] FROM docker.io/library/node:18-alpine                        0.2s` },
+          { id: generateId(), type: 'output', text: ` => [2/4] WORKDIR /app                                                 0.1s` },
+          { id: generateId(), type: 'output', text: ` => [3/4] COPY package*.json ./                                        0.1s` },
+          { id: generateId(), type: 'output', text: ` => [3/4] RUN npm install --production                                0.9s` },
+          { id: generateId(), type: 'output', text: ` => [4/4] COPY . .                                                     0.2s` },
+          { id: generateId(), type: 'success', text: ` => exporting to image                                                 0.3s` },
+          { id: generateId(), type: 'success', text: ` => => naming to docker.io/library/${tag}` },
+        ];
+      } else if (action === 'exec') {
+        const targetContainerName = tokens.find(t => 
+          t !== 'docker' && t !== 'exec' && !t.startsWith('-')
+        );
+        const subCommand = tokens.slice(tokens.indexOf(targetContainerName) + 1).join(' ') || 'sh';
+
+        const matched = containers.find(c => c.name === targetContainerName || c.id === targetContainerName);
+
+        if (!matched) {
+          responseLines = [
+            { id: generateId(), type: 'error', text: `Error: No such container: ${targetContainerName || 'unknown'}` },
+          ];
+        } else if (matched.status !== 'running') {
+          responseLines = [
+            { id: generateId(), type: 'error', text: `Error response from daemon: Container ${matched.id} is not running` },
+          ];
+        } else {
+          checkLabProgress(containers, networks, volumes, cmd);
+
+          if (subCommand.includes('node -v') || subCommand.includes('node --version')) {
+            responseLines = [
+              { id: generateId(), type: 'success', text: 'v18.20.2' },
+            ];
+          } else if (subCommand.includes('python -v') || subCommand.includes('python --version')) {
+            responseLines = [
+              { id: generateId(), type: 'success', text: 'Python 3.11.8' },
+            ];
+          } else if (subCommand.includes('ls')) {
+            responseLines = [
+              { id: generateId(), type: 'output', text: 'Dockerfile  README.md  node_modules  package.json  package-lock.json  src' },
+            ];
+          } else {
+            responseLines = [
+              { id: generateId(), type: 'success', text: `Connected to interactive session on ${matched.name} (/app)` },
+              { id: generateId(), type: 'output', text: `root@${matched.id.substring(0, 7)}:/app# ${subCommand}` },
+              { id: generateId(), type: 'output', text: `Process executed successfully inside isolated container environment.` },
+            ];
           }
         }
       } else {

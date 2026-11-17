@@ -20,7 +20,8 @@ export const TRANSLATIONS = {
     tabOptimizer: 'Dockerfile Analyzer',
     tabGuide: 'Visual Learning',
     tabCheatsheet: 'Cheatsheet',
-    badge5Labs: '5 Labs',
+    badge5Labs: '6 Labs',
+    badge6Labs: '6 Labs',
     badgeAiHelp: 'AI Help',
 
     // Workspace
@@ -47,6 +48,9 @@ export const TRANSLATIONS = {
     cmdCreateNet: 'Create Network',
     cmdComposeUp: 'Compose Up',
     cmdInspectLogs: 'Inspect Logs',
+    cmdBuildApp: 'Build App (docker build)',
+    cmdRunDev: 'Live Code Run (:4000)',
+    cmdTestApp: 'Test App (:4000)',
 
     // Visualizer
     visualizerTitle: 'Live Docker Connection & Topology Visualizer',
@@ -135,7 +139,8 @@ export const TRANSLATIONS = {
     tabOptimizer: 'វិភាគ Dockerfile',
     tabGuide: 'មេរៀន Docker',
     tabCheatsheet: 'តារាងពាក្យបញ្ជា',
-    badge5Labs: '៥ បេសកកម្ម',
+    badge5Labs: '៦ បេសកកម្ម',
+    badge6Labs: '៦ បេសកកម្ម',
     badgeAiHelp: 'ជំនួយ AI',
 
     // Workspace
@@ -162,6 +167,9 @@ export const TRANSLATIONS = {
     cmdCreateNet: 'បង្កើត Network',
     cmdComposeUp: 'រត់ Compose',
     cmdInspectLogs: 'ពិនិត្យ Logs',
+    cmdBuildApp: 'Build App ពីកូដ',
+    cmdRunDev: 'ដំណើរការ Live Code (:4000)',
+    cmdTestApp: 'តេស្ត App (:4000)',
 
     // Visualizer
     visualizerTitle: 'ផែនទីតភ្ជាប់បណ្តាញ Docker & Containers ផ្ទាល់',

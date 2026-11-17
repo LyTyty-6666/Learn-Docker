@@ -220,4 +220,98 @@ docker compose logs -f`,
       },
     ],
   },
+  {
+    id: 'ch-writing-code-with-docker',
+    title: '8. How to Write Code with Docker (Dev to Production)',
+    badge: 'Code & Build',
+    summary: 'A complete developer blueprint: structure projects, write optimal Dockerfiles, configure .dockerignore, and use bind mounts for live hot-reload coding.',
+    content: [
+      {
+        heading: 'Step 1: The Ideal Project Directory Structure',
+        text: 'Keep your source code, configuration, and Docker metadata clean and organized together in the repository root:',
+        codeSnippet: `my-awesome-app/
+├── src/
+│   ├── index.js          # Your server application code
+│   └── routes.js
+├── package.json          # Dependency manifest
+├── package-lock.json     # Strict version lockfile
+├── .dockerignore         # Excludes host junk from image
+├── Dockerfile            # Blueprint for your container
+└── docker-compose.yml    # Development stack orchestration`,
+      },
+      {
+        heading: 'Step 2: The Anatomy of Writing a Dockerfile',
+        text: 'Every line creates an immutable layer. Exploit Docker caching by copying package.json FIRST, running install, and THEN copying source files. This ensures code changes do not trigger a 5-minute npm install on every build!',
+        codeSnippet: `# 1. Use an official lightweight base image
+FROM node:18-alpine
+
+# 2. Set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy dependency definitions first (Layer Cache optimization!)
+COPY package*.json ./
+
+# 4. Install production dependencies cleanly
+RUN npm ci --only=production
+
+# 5. Copy the rest of the application code
+COPY . .
+
+# 6. Switch to a non-privileged user for security (no root!)
+USER node
+
+# 7. Document the port your code listens on
+EXPOSE 3000
+
+# 8. Start the application
+CMD ["node", "src/index.js"]`,
+        callout: 'Golden Rule: If your code changes, Docker re-runs every step AFTER the modified line. Putting "COPY package*.json" before "COPY . ." saves 90% of your build time!',
+      },
+      {
+        heading: 'Step 3: Crucial .dockerignore File',
+        text: 'Never copy your laptop\'s local node_modules or .git directory into your Docker image! Different operating systems (e.g. Mac/Windows C-bindings) will corrupt the Linux container.',
+        codeSnippet: `# .dockerignore
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.local
+dist
+coverage`,
+      },
+      {
+        heading: 'Step 4: Live Code Reloading with Bind Mounts (-v)',
+        text: 'During development, you don\'t want to rebuild your Docker image every time you save a file! Use a Volume Bind Mount to mirror your host project folder into /app inside the container in real time.',
+        codeSnippet: `# Run container with live code sync:
+docker run -d \\
+  -p 3000:3000 \\
+  -v $(pwd):/app \\
+  -v /app/node_modules \\
+  --name my-api-dev \\
+  node:18-alpine \\
+  npx nodemon src/index.js
+
+# Note: "-v /app/node_modules" is an anonymous volume that prevents
+# your host folder from wiping out the container's installed Linux binaries!`,
+      },
+      {
+        heading: 'Step 5: Multi-Stage Build for Tiny Production Images',
+        text: 'For compiled languages or frontend frameworks (React, Vite, Go, TypeScript), build the code in Stage 1, then copy ONLY the compiled bundle into a fresh 10MB Alpine/Nginx container in Stage 2.',
+        codeSnippet: `# ---- Stage 1: Build ----
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# ---- Stage 2: Production Server ----
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]`,
+      },
+    ],
+  },
 ];

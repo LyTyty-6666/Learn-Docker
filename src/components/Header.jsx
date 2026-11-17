@@ -35,7 +35,7 @@ export default function Header({
 
   const tabs = [
     { id: 'workspace', labelKey: 'tabWorkspace', defaultLabel: 'Terminal & Architecture', icon: Terminal },
-    { id: 'labs', labelKey: 'tabLabs', defaultLabel: 'Guided Labs', icon: Award, badgeKey: 'badge5Labs', defaultBadge: '5 Labs' },
+    { id: 'labs', labelKey: 'tabLabs', defaultLabel: 'Guided Labs', icon: Award, badgeKey: 'badge6Labs', defaultBadge: '6 Labs' },
     { id: 'doctor', labelKey: 'tabDoctor', defaultLabel: 'Docker Doctor', icon: Stethoscope, badgeKey: 'badgeAiHelp', defaultBadge: 'AI Help' },
     { id: 'optimizer', labelKey: 'tabOptimizer', defaultLabel: 'Dockerfile Analyzer', icon: FileCode },
     { id: 'guide', labelKey: 'tabGuide', defaultLabel: 'Visual Learning', icon: BookOpen },

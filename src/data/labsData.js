@@ -194,4 +194,50 @@ export const LABS = [
       },
     ],
   },
+  {
+    id: 'lab-6',
+    level: 'Developer',
+    title: 'Lab 6: Writing & Running Custom Code with Docker',
+    description: 'Build a container image directly from your local application code, run it with bind-mount volume for live development code reloading, and test the API endpoint.',
+    xp: 350,
+    steps: [
+      {
+        id: 's1',
+        instruction: 'Build a custom application Docker image named "my-app" from the current directory Dockerfile.',
+        expectedCommand: 'docker build -t my-app .',
+        hint: 'Use: docker build -t my-app .',
+        validate: (state, lastCmd) => {
+          return lastCmd && (lastCmd.includes('docker build') && lastCmd.includes('my-app'));
+        },
+      },
+      {
+        id: 's2',
+        instruction: 'Run "my-app" as a container named "my-app-dev" mapped from host port 4000:3000 with a bind mount (-v $(pwd):/app) for live code reloading.',
+        expectedCommand: 'docker run -d -p 4000:3000 -v $(pwd):/app --name my-app-dev my-app',
+        hint: 'Use: docker run -d -p 4000:3000 -v $(pwd):/app --name my-app-dev my-app',
+        validate: (state) => {
+          const c = state.containers.find(x => x.name === 'my-app-dev' && x.status === 'running');
+          return c && c.ports.some(p => p.host === 4000);
+        },
+      },
+      {
+        id: 's3',
+        instruction: 'Execute a command inside the running container to check the Node.js runtime version.',
+        expectedCommand: 'docker exec my-app-dev node -v',
+        hint: 'Use: docker exec my-app-dev node -v',
+        validate: (state, lastCmd) => {
+          return lastCmd && (lastCmd.includes('docker exec') && lastCmd.includes('my-app-dev'));
+        },
+      },
+      {
+        id: 's4',
+        instruction: 'Test the live-reloading application API response using curl on localhost:4000.',
+        expectedCommand: 'curl http://localhost:4000',
+        hint: 'Type: curl http://localhost:4000',
+        validate: (state, lastCmd) => {
+          return lastCmd && (lastCmd.includes('curl') && lastCmd.includes('4000'));
+        },
+      },
+    ],
+  },
 ];
