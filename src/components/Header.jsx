@@ -1,0 +1,337 @@
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  Terminal,
+  Activity,
+  Award,
+  BookOpen,
+  FileCode,
+  Stethoscope,
+  BookmarkCheck,
+  RefreshCw,
+  Layers,
+  Smartphone,
+  Tablet,
+  Monitor,
+  Sun,
+  Moon,
+  Globe,
+} from 'lucide-react';
+import { useResponsive } from '../hooks/useResponsive';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+
+export default function Header({
+  activeTab,
+  setActiveTab,
+  runningCount,
+  totalCount,
+  xp,
+  onReset,
+}) {
+  const { isMobile, isTablet, isDesktop, breakpoint } = useResponsive();
+  const { isDark, toggleTheme, colors } = useTheme();
+  const { lang, isKhmer, toggleLanguage, t } = useLanguage();
+
+  const tabs = [
+    { id: 'workspace', labelKey: 'tabWorkspace', defaultLabel: 'Terminal & Architecture', icon: Terminal },
+    { id: 'labs', labelKey: 'tabLabs', defaultLabel: 'Guided Labs', icon: Award, badgeKey: 'badge6Labs', defaultBadge: '6 Labs' },
+    { id: 'doctor', labelKey: 'tabDoctor', defaultLabel: 'Docker Doctor', icon: Stethoscope, badgeKey: 'badgeAiHelp', defaultBadge: 'AI Help' },
+    { id: 'optimizer', labelKey: 'tabOptimizer', defaultLabel: 'Dockerfile Analyzer', icon: FileCode },
+    { id: 'guide', labelKey: 'tabGuide', defaultLabel: 'Visual Learning', icon: BookOpen },
+    { id: 'cheatsheet', labelKey: 'tabCheatsheet', defaultLabel: 'Cheatsheet', icon: BookmarkCheck },
+  ];
+
+  return (
+    <View style={[styles.headerContainer, { backgroundColor: colors.headerBg, borderBottomColor: colors.cardBorder }]}>
+      {/* Top Bar */}
+      <View style={[styles.topRow, isMobile && styles.topRowMobile]}>
+        <View style={styles.brandGroup}>
+          <View style={[styles.logoBadge, { backgroundColor: colors.primaryBg, borderColor: colors.primaryBorder }]}>
+            <Layers size={22} color={colors.primary} />
+          </View>
+          <View>
+            <View style={styles.titleRow}>
+              <Text style={[styles.brandTitle, { color: colors.text }]}>{t('brandTitle', 'DockMaster')}</Text>
+              <View style={[styles.proBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.proText}>PRO</Text>
+              </View>
+            </View>
+            <Text style={[styles.brandSubtitle, { color: colors.textMuted }]}>
+              {t('brandSubtitle', 'Interactive Docker & Server Learning Platform')}
+            </Text>
+          </View>
+        </View>
+
+        {/* Stats, Language, Theme & Actions */}
+        <View style={styles.statsRow}>
+          {/* Active Containers Pill */}
+          <View style={[styles.statPill, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+            <View style={[styles.statusDot, runningCount > 0 ? styles.statusActive : styles.statusIdle]} />
+            <Text style={[styles.statText, { color: colors.textSub }]}>
+              <Text style={[styles.statBold, { color: colors.text }]}>{runningCount}</Text>/{totalCount} {t('running', 'Running')}
+            </Text>
+          </View>
+
+          {/* XP Pill */}
+          <View style={[styles.statPill, styles.xpPill, { backgroundColor: colors.warningBg, borderColor: colors.warning }]}>
+            <Award size={14} color="#e3b341" />
+            <Text style={styles.xpText}>{xp} {t('xpBonus', 'XP')}</Text>
+          </View>
+
+          {/* Language Switcher (EN ↔ ខ្មែរ) */}
+          <TouchableOpacity
+            style={[styles.actionPill, { backgroundColor: isKhmer ? 'rgba(9, 105, 218, 0.15)' : colors.cardSubBg, borderColor: isKhmer ? colors.primary : colors.cardBorder }]}
+            onPress={toggleLanguage}
+            activeOpacity={0.7}
+            title={isKhmer ? 'ប្តូរទៅភាសាអង់គ្លេស' : 'Switch to Khmer language'}
+          >
+            <Globe size={13} color={isKhmer ? colors.primary : colors.textMuted} />
+            <Text style={[styles.pillText, { color: isKhmer ? colors.primary : colors.text, fontWeight: '700' }]}>
+              {isKhmer ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Theme Toggle Button (White-Cream Light ↔ Dark) */}
+          <TouchableOpacity
+            style={[styles.actionPill, styles.themePill, { backgroundColor: !isDark ? '#FFF2D9' : colors.cardSubBg, borderColor: !isDark ? '#E5B869' : colors.cardBorder }]}
+            onPress={toggleTheme}
+            activeOpacity={0.7}
+            title={isDark ? 'Switch to White-Cream Light Mode' : 'Switch to Dark Mode'}
+          >
+            {!isDark ? (
+              <Sun size={13} color="#9A6700" />
+            ) : (
+              <Moon size={13} color="#58a6ff" />
+            )}
+            {!isMobile && (
+              <Text style={[styles.pillText, { color: !isDark ? '#7A5200' : colors.textSub, fontWeight: '600' }]}>
+                {!isDark ? (isKhmer ? 'White-Cream ពន្លឺ' : 'White-Cream') : (isKhmer ? 'ងងឹត Dark' : 'Dark')}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Reset Sandbox */}
+          <TouchableOpacity
+            style={[styles.resetButton, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+            onPress={onReset}
+            activeOpacity={0.7}
+          >
+            <RefreshCw size={13} color={colors.textMuted} />
+            {!isMobile && <Text style={[styles.resetText, { color: colors.textMuted }]}>{t('reset', 'Reset')}</Text>}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Navigation Tabs (Scrollable on Mobile) */}
+      <View style={[styles.navBar, { borderTopColor: colors.cardBorder }]}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.navScroll}
+        >
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            const label = t(tab.labelKey, tab.defaultLabel);
+            const badge = tab.badgeKey ? t(tab.badgeKey, tab.defaultBadge) : null;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => setActiveTab(tab.id)}
+                style={[
+                  styles.navTab,
+                  isActive && [styles.navTabActive, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.primary }]
+                ]}
+                activeOpacity={0.8}
+              >
+                <Icon size={16} color={isActive ? colors.primary : colors.textMuted} />
+                <Text style={[styles.navLabel, { color: colors.textMuted }, isActive && [styles.navLabelActive, { color: colors.text }]]}>
+                  {label}
+                </Text>
+                {badge && (
+                  <View style={[
+                    styles.tabBadge,
+                    { backgroundColor: colors.cardBorder },
+                    isActive && [styles.tabBadgeActive, { backgroundColor: colors.primaryBg }]
+                  ]}>
+                    <Text style={[
+                      styles.tabBadgeText,
+                      { color: colors.textMuted },
+                      isActive && [styles.tabBadgeTextActive, { color: colors.primary }]
+                    ]}>
+                      {badge}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    borderBottomWidth: 1,
+    zIndex: 10,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  topRowMobile: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  brandGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logoBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  brandTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  proBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  proText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  brandSubtitle: {
+    fontSize: 12,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  statPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 6,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusActive: {
+    backgroundColor: '#3fb950',
+  },
+  statusIdle: {
+    backgroundColor: '#8b949e',
+  },
+  statText: {
+    fontSize: 12,
+  },
+  statBold: {
+    fontWeight: '700',
+  },
+  xpPill: {
+    borderWidth: 1,
+  },
+  xpText: {
+    color: '#e3b341',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  actionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 5,
+    cursor: 'pointer',
+  },
+  themePill: {
+    gap: 5,
+  },
+  pillText: {
+    fontSize: 11,
+  },
+  resetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 4,
+    cursor: 'pointer',
+  },
+  resetText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  navBar: {
+    borderTopWidth: 1,
+    paddingHorizontal: 8,
+  },
+  navScroll: {
+    flexDirection: 'row',
+    paddingVertical: 6,
+    gap: 6,
+  },
+  navTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 6,
+    gap: 8,
+  },
+  navTabActive: {
+    borderBottomWidth: 2,
+  },
+  navLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  navLabelActive: {
+    fontWeight: '700',
+  },
+  tabBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 10,
+  },
+  tabBadgeActive: {},
+  tabBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  tabBadgeTextActive: {},
+});
