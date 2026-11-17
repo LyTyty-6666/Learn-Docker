@@ -26,6 +26,8 @@ import {
   Network,
 } from 'lucide-react';
 import { useResponsive } from '../hooks/useResponsive';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Visualizer({
   containers,
@@ -33,6 +35,8 @@ export default function Visualizer({
   onExecuteCommand,
 }) {
   const { isMobile } = useResponsive();
+  const { isDark, colors } = useTheme();
+  const { t } = useLanguage();
   const [selectedContainer, setSelectedContainer] = useState(null);
   const [testResult, setTestResult] = useState(null);
   const [activeTab, setActiveTab] = useState('topology'); // 'topology' | 'networks'
@@ -97,31 +101,47 @@ export default function Visualizer({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
       {/* Header bar */}
-      <View style={styles.visualHeader}>
+      <View style={[styles.visualHeader, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
         <View style={styles.headerTitleRow}>
-          <Radio size={16} color="#58a6ff" />
-          <Text style={styles.headerTitle}>Live Docker Connection & Topology Visualizer</Text>
+          <Radio size={16} color={colors.primary} />
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('visualizerTitle', 'Live Docker Connection & Topology Visualizer')}</Text>
         </View>
 
         <View style={styles.tabButtons}>
           <TouchableOpacity
-            style={[styles.modeTab, activeTab === 'topology' && styles.modeTabActive]}
+            style={[
+              styles.modeTab,
+              { backgroundColor: colors.cardBg },
+              activeTab === 'topology' && [styles.modeTabActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+            ]}
             onPress={() => setActiveTab('topology')}
           >
-            <Server size={13} color={activeTab === 'topology' ? '#58a6ff' : '#8b949e'} />
-            <Text style={[styles.modeTabText, activeTab === 'topology' && styles.modeTabTextActive]}>
-              Topology Map
+            <Server size={13} color={activeTab === 'topology' ? colors.primary : colors.textMuted} />
+            <Text style={[
+              styles.modeTabText,
+              { color: colors.textMuted },
+              activeTab === 'topology' && [styles.modeTabTextActive, { color: colors.primary }]
+            ]}>
+              {t('tabTopologyMap', 'Topology Map')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modeTab, activeTab === 'networks' && styles.modeTabActive]}
+            style={[
+              styles.modeTab,
+              { backgroundColor: colors.cardBg },
+              activeTab === 'networks' && [styles.modeTabActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+            ]}
             onPress={() => setActiveTab('networks')}
           >
-            <Network size={13} color={activeTab === 'networks' ? '#58a6ff' : '#8b949e'} />
-            <Text style={[styles.modeTabText, activeTab === 'networks' && styles.modeTabTextActive]}>
-              Networks ({networks.length})
+            <Network size={13} color={activeTab === 'networks' ? colors.primary : colors.textMuted} />
+            <Text style={[
+              styles.modeTabText,
+              { color: colors.textMuted },
+              activeTab === 'networks' && [styles.modeTabTextActive, { color: colors.primary }]
+            ]}>
+              {t('tabNetworks', 'Networks')} ({networks.length})
             </Text>
           </TouchableOpacity>
         </View>
@@ -132,41 +152,41 @@ export default function Visualizer({
         {activeTab === 'topology' ? (
           <View style={styles.topologyWrapper}>
             {/* HOST MACHINE ZONE */}
-            <View style={styles.hostZone}>
+            <View style={[styles.hostZone, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
               <View style={styles.zoneHeader}>
-                <Globe size={15} color="#58a6ff" />
-                <Text style={styles.zoneTitle}>HOST MACHINE (Your Laptop / localhost)</Text>
+                <Globe size={15} color={colors.primary} />
+                <Text style={[styles.zoneTitle, { color: colors.primary }]}>{t('hostMachineZone', 'HOST MACHINE (Your Laptop / localhost)')}</Text>
               </View>
-              <Text style={styles.zoneDesc}>
-                External web browser & host requests enter here. Docker proxy intercepts mapped ports.
+              <Text style={[styles.zoneDesc, { color: colors.textMuted }]}>
+                {t('hostZoneDesc', 'External ports accessible in your web browser (http://localhost:PORT)')}
               </Text>
 
               {/* Host Ports Grid */}
               <View style={styles.hostPortsGrid}>
                 {containers.length === 0 ? (
-                  <Text style={styles.emptyText}>No containers running or mapped.</Text>
+                  <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('noHostPorts', 'No host ports currently published (-p)')}</Text>
                 ) : (
                   containers.map(c => {
                     const hasPort = c.ports && c.ports.length > 0;
                     const p = hasPort ? c.ports[0] : null;
                     return (
-                      <View key={c.id} style={styles.portPill}>
+                      <View key={c.id} style={[styles.portPill, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
                         <View style={styles.portLeft}>
-                          <Text style={styles.portHostLabel}>HOST PORT</Text>
-                          <Text style={styles.portHostNum}>{p ? `:${p.host}` : 'Unbound'}</Text>
+                          <Text style={[styles.portHostLabel, { color: colors.textMuted }]}>HOST PORT</Text>
+                          <Text style={[styles.portHostNum, { color: colors.primary }]}>{p ? `:${p.host}` : 'Unbound'}</Text>
                         </View>
-                        <ArrowRight size={13} color="#8b949e" />
+                        <ArrowRight size={13} color={colors.textMuted} />
                         <View style={styles.portRight}>
-                          <Text style={styles.portContainerLabel}>{c.name}</Text>
-                          <Text style={styles.portContainerNum}>{p ? `:${p.container}` : 'No Port'}</Text>
+                          <Text style={[styles.portContainerLabel, { color: colors.text }]}>{c.name}</Text>
+                          <Text style={[styles.portContainerNum, { color: colors.textSub }]}>{p ? `:${p.container}` : 'No Port'}</Text>
                         </View>
                         {p && (
                           <TouchableOpacity
-                            style={styles.testBtnSmall}
+                            style={[styles.testBtnSmall, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]}
                             onPress={() => handleTestConnection(c, p)}
                           >
-                            <Send size={11} color="#58a6ff" />
-                            <Text style={styles.testBtnText}>Test</Text>
+                            <Send size={11} color={colors.primary} />
+                            <Text style={[styles.testBtnText, { color: colors.primary }]}>{t('testHttpBtn', 'Test')}</Text>
                           </TouchableOpacity>
                         )}
                       </View>
@@ -178,34 +198,34 @@ export default function Visualizer({
 
             {/* DOCKER BRIDGE CONNECTOR */}
             <View style={styles.connectorSection}>
-              <View style={styles.connectionLine} />
-              <View style={styles.bridgeBadge}>
-                <Radio size={12} color="#3fb950" />
-                <Text style={styles.bridgeBadgeText}>Docker Virtual Network (docker0 / bridge)</Text>
+              <View style={[styles.connectionLine, { backgroundColor: colors.cardBorder }]} />
+              <View style={[styles.bridgeBadge, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                <Radio size={12} color={colors.success} />
+                <Text style={[styles.bridgeBadgeText, { color: colors.text }]}>{t('bridgeNetworkTitle', 'Docker Virtual Network (docker0 / bridge)')}</Text>
               </View>
-              <View style={styles.connectionLine} />
+              <View style={[styles.connectionLine, { backgroundColor: colors.cardBorder }]} />
             </View>
 
             {/* CONTAINERS ZONE */}
-            <View style={styles.containersZone}>
+            <View style={[styles.containersZone, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
               <View style={styles.zoneHeader}>
-                <Server size={15} color="#3fb950" />
-                <Text style={styles.zoneTitle}>DOCKER CONTAINERS (Isolated Sandboxes)</Text>
+                <Server size={15} color={colors.success} />
+                <Text style={[styles.zoneTitle, { color: colors.success }]}>{t('containersZone', 'DOCKER CONTAINERS (Isolated Sandboxes)')}</Text>
               </View>
 
               {containers.length === 0 ? (
-                <View style={styles.emptyCard}>
-                  <Server size={32} color="#30363d" />
-                  <Text style={styles.emptyCardTitle}>No Containers Present</Text>
-                  <Text style={styles.emptyCardSub}>
-                    Run a container in the CLI Terminal to see it appear in real-time!
+                <View style={[styles.emptyCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                  <Server size={32} color={colors.textMuted} />
+                  <Text style={[styles.emptyCardTitle, { color: colors.text }]}>{t('noContainersRunning', 'No Containers Present')}</Text>
+                  <Text style={[styles.emptyCardSub, { color: colors.textMuted }]}>
+                    {t('noContainersRunning', 'Run a container in the CLI Terminal to see it appear in real-time!')}
                   </Text>
                   <TouchableOpacity
                     style={styles.quickLaunchBtn}
                     onPress={() => onExecuteCommand('docker run -d -p 8080:80 --name web-server nginx:alpine')}
                   >
                     <Play size={13} color="#ffffff" />
-                    <Text style={styles.quickLaunchBtnText}>Launch Nginx Web Server</Text>
+                    <Text style={styles.quickLaunchBtnText}>{t('quickLaunchNginx', 'Launch Nginx Web Server')}</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -214,43 +234,47 @@ export default function Visualizer({
                     const isRunning = c.status === 'running';
                     const mainPort = c.ports && c.ports[0];
                     return (
-                      <View key={c.id} style={[styles.containerCard, !isRunning && styles.containerCardStopped]}>
+                      <View key={c.id} style={[
+                        styles.containerCard,
+                        { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                        !isRunning && styles.containerCardStopped
+                      ]}>
                         {/* Container Card Header */}
-                        <View style={styles.cardHeader}>
+                        <View style={[styles.cardHeader, { borderBottomColor: colors.cardBorder }]}>
                           <View style={styles.cardTitleGroup}>
                             <View style={[styles.statusIndicator, isRunning ? styles.statusGreen : styles.statusRed]} />
-                            <Text style={styles.containerNameText}>{c.name}</Text>
+                            <Text style={[styles.containerNameText, { color: colors.text }]}>{c.name}</Text>
                           </View>
-                          <View style={styles.idBadge}>
-                            <Text style={styles.idBadgeText}>{c.id.substring(0, 7)}</Text>
+                          <View style={[styles.idBadge, { backgroundColor: colors.cardSubBg }]}>
+                            <Text style={[styles.idBadgeText, { color: colors.textMuted }]}>{c.id.substring(0, 7)}</Text>
                           </View>
                         </View>
 
                         {/* Image & IP */}
                         <View style={styles.metaRow}>
-                          <Text style={styles.metaLabel}>Image:</Text>
-                          <Text style={styles.metaValue}>{c.image}</Text>
+                          <Text style={[styles.metaLabel, { color: colors.textMuted }]}>Image:</Text>
+                          <Text style={[styles.metaValue, { color: colors.textSub }]}>{c.image}</Text>
                         </View>
                         <View style={styles.metaRow}>
-                          <Text style={styles.metaLabel}>IP Address:</Text>
-                          <Text style={styles.metaValue}>{c.ip || '172.17.0.2'}</Text>
+                          <Text style={[styles.metaLabel, { color: colors.textMuted }]}>IP Address:</Text>
+                          <Text style={[styles.metaValue, { color: colors.textSub }]}>{c.ip || '172.17.0.2'}</Text>
                         </View>
                         <View style={styles.metaRow}>
-                          <Text style={styles.metaLabel}>Network:</Text>
-                          <Text style={styles.metaValueHighlight}>{c.network || 'bridge'}</Text>
+                          <Text style={[styles.metaLabel, { color: colors.textMuted }]}>Network:</Text>
+                          <Text style={[styles.metaValueHighlight, { color: colors.primary }]}>{c.network || 'bridge'}</Text>
                         </View>
 
                         {/* Ports Mapping Display */}
-                        <View style={styles.portBox}>
-                          <Text style={styles.portBoxTitle}>PORT FORWARDING:</Text>
+                        <View style={[styles.portBox, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+                          <Text style={[styles.portBoxTitle, { color: colors.textMuted }]}>{t('portForwardingTitle', 'PORT FORWARDING:')}</Text>
                           {mainPort ? (
                             <View style={styles.portRouteRow}>
-                              <Text style={styles.portRouteHost}>localhost:{mainPort.host}</Text>
-                              <ArrowRight size={11} color="#58a6ff" />
-                              <Text style={styles.portRouteContainer}>{mainPort.container}/tcp</Text>
+                              <Text style={[styles.portRouteHost, { color: colors.primary }]}>localhost:{mainPort.host}</Text>
+                              <ArrowRight size={11} color={colors.primary} />
+                              <Text style={[styles.portRouteContainer, { color: colors.success }]}>{mainPort.container}/tcp</Text>
                             </View>
                           ) : (
-                            <Text style={styles.noPortsText}>No ports published (-p)</Text>
+                            <Text style={[styles.noPortsText, { color: colors.textMuted }]}>{t('noPortsPublished', 'No ports published (-p)')}</Text>
                           )}
                         </View>
 
@@ -270,32 +294,32 @@ export default function Visualizer({
                         <View style={styles.cardActions}>
                           {mainPort && (
                             <TouchableOpacity
-                              style={styles.cardActionBtnPrimary}
+                              style={[styles.cardActionBtnPrimary, { backgroundColor: colors.primary }]}
                               onPress={() => handleTestConnection(c, mainPort)}
                             >
                               <Send size={12} color="#ffffff" />
-                              <Text style={styles.cardActionBtnPrimaryText}>Test HTTP</Text>
+                              <Text style={styles.cardActionBtnPrimaryText}>{t('testHttpBtn', 'Test HTTP')}</Text>
                             </TouchableOpacity>
                           )}
 
                           <TouchableOpacity
-                            style={styles.cardActionBtn}
+                            style={[styles.cardActionBtn, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
                             onPress={() => onExecuteCommand(isRunning ? `docker stop ${c.name}` : `docker start ${c.name}`)}
                           >
                             {isRunning ? (
-                              <Square size={12} color="#f85149" />
+                              <Square size={12} color={colors.danger} />
                             ) : (
-                              <Play size={12} color="#3fb950" />
+                              <Play size={12} color={colors.success} />
                             )}
-                            <Text style={styles.cardActionBtnText}>{isRunning ? 'Stop' : 'Start'}</Text>
+                            <Text style={[styles.cardActionBtnText, { color: colors.text }]}>{isRunning ? t('stopBtn', 'Stop') : t('startBtn', 'Start')}</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity
-                            style={styles.cardActionBtn}
+                            style={[styles.cardActionBtn, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
                             onPress={() => onExecuteCommand(`docker logs ${c.name}`)}
                           >
-                            <FileText size={12} color="#8b949e" />
-                            <Text style={styles.cardActionBtnText}>Logs</Text>
+                            <FileText size={12} color={colors.textMuted} />
+                            <Text style={[styles.cardActionBtnText, { color: colors.text }]}>{t('logsBtn', 'Logs')}</Text>
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -308,54 +332,54 @@ export default function Visualizer({
         ) : (
           /* NETWORKS TAB */
           <View style={styles.networksWrapper}>
-            <Text style={styles.sectionTitle}>Docker Virtual Networks</Text>
-            <Text style={styles.sectionSub}>
-              Custom networks provide automatic DNS name resolution between containers.
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('tabNetworks', 'Docker Virtual Networks')}</Text>
+            <Text style={[styles.sectionSub, { color: colors.textMuted }]}>
+              {t('networksSub', 'Custom networks provide automatic DNS name resolution between containers.')}
             </Text>
 
             <View style={styles.networkList}>
               {networks.map(net => {
                 const attachedContainers = containers.filter(c => c.network === net.name);
                 return (
-                  <View key={net.id} style={styles.networkCard}>
-                    <View style={styles.netHeader}>
+                  <View key={net.id} style={[styles.networkCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                    <View style={[styles.netHeader, { borderBottomColor: colors.cardBorder }]}>
                       <View style={styles.netTitleGroup}>
-                        <Network size={16} color="#58a6ff" />
-                        <Text style={styles.netNameText}>{net.name}</Text>
+                        <Network size={16} color={colors.primary} />
+                        <Text style={[styles.netNameText, { color: colors.text }]}>{net.name}</Text>
                         {net.isDefault && (
                           <View style={styles.defaultPill}>
                             <Text style={styles.defaultPillText}>DEFAULT</Text>
                           </View>
                         )}
                       </View>
-                      <Text style={styles.netDriverText}>Driver: {net.driver}</Text>
+                      <Text style={[styles.netDriverText, { color: colors.textMuted }]}>Driver: {net.driver}</Text>
                     </View>
 
                     <View style={styles.netMetaGrid}>
                       <View>
-                        <Text style={styles.netMetaKey}>Subnet:</Text>
-                        <Text style={styles.netMetaVal}>{net.subnet}</Text>
+                        <Text style={[styles.netMetaKey, { color: colors.textMuted }]}>Subnet:</Text>
+                        <Text style={[styles.netMetaVal, { color: colors.textSub }]}>{net.subnet}</Text>
                       </View>
                       <View>
-                        <Text style={styles.netMetaKey}>Gateway:</Text>
-                        <Text style={styles.netMetaVal}>{net.gateway}</Text>
+                        <Text style={[styles.netMetaKey, { color: colors.textMuted }]}>Gateway:</Text>
+                        <Text style={[styles.netMetaVal, { color: colors.textSub }]}>{net.gateway}</Text>
                       </View>
                     </View>
 
                     {/* Attached containers */}
-                    <View style={styles.attachedBox}>
-                      <Text style={styles.attachedTitle}>
+                    <View style={[styles.attachedBox, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+                      <Text style={[styles.attachedTitle, { color: colors.textMuted }]}>
                         Connected Containers ({attachedContainers.length}):
                       </Text>
                       {attachedContainers.length === 0 ? (
-                        <Text style={styles.attachedEmpty}>None attached</Text>
+                        <Text style={[styles.attachedEmpty, { color: colors.textMuted }]}>None attached</Text>
                       ) : (
                         <View style={styles.attachedChips}>
                           {attachedContainers.map(c => (
-                            <View key={c.id} style={styles.attachedChip}>
-                              <Server size={11} color="#3fb950" />
-                              <Text style={styles.attachedChipText}>{c.name}</Text>
-                              <Text style={styles.attachedChipIp}>({c.ip})</Text>
+                            <View key={c.id} style={[styles.attachedChip, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+                              <Server size={11} color={colors.success} />
+                              <Text style={[styles.attachedChipText, { color: colors.text }]}>{c.name}</Text>
+                              <Text style={[styles.attachedChipIp, { color: colors.textMuted }]}>({c.ip})</Text>
                             </View>
                           ))}
                         </View>
@@ -373,41 +397,41 @@ export default function Visualizer({
       {testResult && (
         <Modal visible={true} transparent={true} animationType="fade">
           <View style={styles.modalOverlay}>
-            <View style={styles.modalBox}>
-              <View style={styles.modalHeader}>
+            <View style={[styles.modalBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <View style={[styles.modalHeader, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
                 <View style={styles.modalTitleRow}>
                   {testResult.success ? (
-                    <CheckCircle2 size={18} color="#3fb950" />
+                    <CheckCircle2 size={18} color={colors.success} />
                   ) : (
-                    <XCircle size={18} color="#f85149" />
+                    <XCircle size={18} color={colors.danger} />
                   )}
-                  <Text style={styles.modalTitle}>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>
                     HTTP Test Result: {testResult.status}
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => setTestResult(null)}>
-                  <X size={18} color="#8b949e" />
+                  <X size={18} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
               <ScrollView style={styles.modalBody}>
                 <View style={styles.modalMetaRow}>
-                  <Text style={styles.modalMetaLabel}>Target Endpoint:</Text>
-                  <Text style={styles.modalMetaCode}>
+                  <Text style={[styles.modalMetaLabel, { color: colors.textMuted }]}>Target Endpoint:</Text>
+                  <Text style={[styles.modalMetaCode, { backgroundColor: colors.cardSubBg, color: colors.primary }]}>
                     http://localhost:{testResult.port}
                   </Text>
                 </View>
                 <View style={styles.modalMetaRow}>
-                  <Text style={styles.modalMetaLabel}>Destination Container:</Text>
-                  <Text style={styles.modalMetaCode}>
+                  <Text style={[styles.modalMetaLabel, { color: colors.textMuted }]}>Destination Container:</Text>
+                  <Text style={[styles.modalMetaCode, { backgroundColor: colors.cardSubBg, color: colors.text }]}>
                     {testResult.container} (internal port {testResult.internalPort})
                   </Text>
                 </View>
 
                 {testResult.body && (
-                  <View style={styles.bodyBox}>
-                    <Text style={styles.bodyBoxLabel}>Response Body:</Text>
-                    <Text style={styles.bodyBoxText}>{testResult.body}</Text>
+                  <View style={[styles.bodyBox, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+                    <Text style={[styles.bodyBoxLabel, { color: colors.textMuted }]}>Response Body:</Text>
+                    <Text style={[styles.bodyBoxText, { color: colors.text }]}>{testResult.body}</Text>
                   </View>
                 )}
 
@@ -415,15 +439,15 @@ export default function Visualizer({
                   <Text style={styles.errorMsgText}>{testResult.message}</Text>
                 )}
 
-                <View style={styles.doctorTipBox}>
-                  <Text style={styles.doctorTipTitle}>💡 DockMaster Explanation:</Text>
-                  <Text style={styles.doctorTipText}>{testResult.tip}</Text>
+                <View style={[styles.doctorTipBox, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]}>
+                  <Text style={[styles.doctorTipTitle, { color: colors.primary }]}>💡 DockMaster Explanation:</Text>
+                  <Text style={[styles.doctorTipText, { color: colors.text }]}>{testResult.tip}</Text>
                 </View>
               </ScrollView>
 
-              <View style={styles.modalFooter}>
+              <View style={[styles.modalFooter, { backgroundColor: colors.cardSubBg, borderTopColor: colors.cardBorder }]}>
                 <TouchableOpacity
-                  style={styles.closeModalBtn}
+                  style={[styles.closeModalBtn, { backgroundColor: colors.primary }]}
                   onPress={() => setTestResult(null)}
                 >
                   <Text style={styles.closeModalBtnText}>Close</Text>
@@ -445,6 +469,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#30363d',
     overflow: 'hidden',
+    minHeight: 0,
   },
   visualHeader: {
     flexDirection: 'row',
@@ -496,6 +521,7 @@ const styles = StyleSheet.create({
   },
   visualScroll: {
     flex: 1,
+    minHeight: 0,
   },
   visualScrollContent: {
     padding: 12,

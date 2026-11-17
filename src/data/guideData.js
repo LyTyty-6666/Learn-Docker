@@ -137,4 +137,87 @@ volumes:
       },
     ],
   },
+  {
+    id: 'ch-how-to-learn',
+    title: '6. The Master Roadmap: How to Learn Docker',
+    badge: 'Study Guide',
+    summary: 'A structured 6-phase journey from zero command-line knowledge to production multi-container orchestration.',
+    content: [
+      {
+        heading: 'Phase 1: Understand Containers vs VMs & The Mental Model',
+        text: 'Do not memorize commands yet! First grasp WHY containers exist. A container is NOT a mini-VM with a guest kernel; it is a sandboxed process sharing the Linux kernel via cgroups (resource limits) and namespaces (isolated network, process IDs, and mounts).',
+        callout: 'Remember: Docker Image = Recipe/Class (Immutable Blueprint). Docker Container = Running Instance (Living Object with ephemeral state).',
+      },
+      {
+        heading: 'Phase 2: Master Core Container CLI Commands',
+        text: 'Practice the lifecycle: pulling images, launching detached containers with port publishing, inspecting logs, opening an interactive shell with exec, and cleaning up stopped containers.',
+        codeSnippet: `# The Core 5 Commands to practice daily:
+docker run -d -p 8080:80 --name my-web nginx:alpine
+docker ps -a
+docker logs -f my-web
+docker exec -it my-web sh
+docker stop my-web && docker rm my-web`,
+      },
+      {
+        heading: 'Phase 3: Write Efficient Dockerfiles & Layer Caching',
+        text: 'Learn how layer caching works. Always copy dependency locks (package.json, requirements.txt) and install packages BEFORE copying source code. Use Alpine or Slim base images to keep footprint small.',
+        codeSnippet: `# Optimal Dockerfile pattern:
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]`,
+      },
+      {
+        heading: 'Phase 4: Master Docker Networking and Persistent Storage',
+        text: 'Master custom bridge networks so containers can speak via DNS hostnames (e.g. database:5432). Create named volumes to prevent data loss whenever database containers restart.',
+        codeSnippet: `docker network create app-net
+docker volume create db-data
+docker run -d --name db --network app-net -v db-data:/var/lib/postgresql/data postgres:15-alpine`,
+      },
+      {
+        heading: 'Phase 5: Multi-Container Docker Compose',
+        text: 'Replace long "docker run" CLI commands with clean, declarative YAML files in docker-compose.yml to launch your frontend, API, database, and cache with a single "docker compose up -d".',
+      },
+      {
+        heading: 'Phase 6: Production Security & CI/CD Pipelines',
+        text: 'Audit for security: never run as root (USER nonroot), pin image versions (avoid :latest in production), use .dockerignore, and automate container builds and vulnerability scans in GitHub Actions.',
+      },
+    ],
+  },
+  {
+    id: 'ch-practice-projects',
+    title: '7. Real-World Docker Practice Projects',
+    badge: 'Projects',
+    summary: 'Solidify your learning with 4 progressive hands-on projects designed to build muscle memory.',
+    content: [
+      {
+        heading: 'Project 1: Static Web Server with Custom Nginx Config',
+        text: 'Create a simple HTML/CSS portfolio website and package it with Nginx Alpine. Mount your custom nginx.conf with custom gzip and cache headers.',
+        codeSnippet: `docker build -t my-website .
+docker run -d -p 8080:80 --name web my-website`,
+      },
+      {
+        heading: 'Project 2: Node.js Express REST API + Redis Cache',
+        text: 'Build a Node/Express API with an endpoint that checks Redis for cached query data before hitting a mock database. Connect both containers using a custom user network.',
+        codeSnippet: `docker network create my-net
+docker run -d --name redis-cache --network my-net redis:alpine
+docker run -d -p 3000:3000 --name api --network my-net -e REDIS_HOST=redis-cache my-api`,
+      },
+      {
+        heading: 'Project 3: Full-Stack Compose Stack (PERN/MERN)',
+        text: 'Connect a React Vite frontend, Node.js API, PostgreSQL database with named volume persistence, and an Nginx reverse proxy using docker-compose.yml.',
+        codeSnippet: `docker compose up -d
+docker compose ps
+docker compose logs -f`,
+      },
+      {
+        heading: 'Project 4: Automated CI/CD Pipeline with GitHub Actions',
+        text: 'Set up a GitHub Actions workflow that automatically runs tests, builds your multi-stage Docker image, tags it with the Git commit SHA, and pushes to Docker Hub or GitHub Container Registry (ghcr.io).',
+      },
+    ],
+  },
 ];

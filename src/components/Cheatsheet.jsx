@@ -13,10 +13,15 @@ import {
   Play,
   Copy,
   Terminal,
+  X,
 } from 'lucide-react';
 import { CHEATSHEET } from '../data/cheatsheetData';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Cheatsheet({ onExecuteCommand }) {
+  const { colors, isDark } = useTheme();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [copiedCmd, setCopiedCmd] = useState(null);
 
@@ -36,24 +41,36 @@ export default function Cheatsheet({ onExecuteCommand }) {
     ),
   })).filter(cat => cat.items.length > 0);
 
+  const totalMatches = filteredCategories.reduce((acc, cat) => acc + cat.items.length, 0);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
       {/* Header with Search */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
         <View style={styles.titleRow}>
-          <BookmarkCheck size={18} color="#58a6ff" />
-          <Text style={styles.titleText}>Interactive Docker Commands Cheatsheet</Text>
+          <View style={styles.titleLeft}>
+            <BookmarkCheck size={18} color={colors.primary} />
+            <Text style={[styles.titleText, { color: colors.text }]}>{t('cheatsheetTitle', 'Interactive Docker Commands Cheatsheet')}</Text>
+          </View>
+          <View style={[styles.matchCountBadge, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+            <Text style={[styles.matchCountText, { color: colors.primary }]}>{totalMatches} {t('commandsLabel', 'Commands')}</Text>
+          </View>
         </View>
 
-        <View style={styles.searchBox}>
-          <Search size={14} color="#8b949e" />
+        <View style={[styles.searchBox, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <Search size={14} color={colors.textMuted} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             value={searchTerm}
             onChangeText={setSearchTerm}
-            placeholder="Search commands (e.g. port, logs, network, compose)..."
-            placeholderTextColor="#6e7681"
+            placeholder={t('searchCommandsPlaceholder', 'Search commands (e.g. port, logs, network, compose)...')}
+            placeholderTextColor={colors.textMuted}
           />
+          {searchTerm.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchTerm('')} style={styles.clearSearchBtn}>
+              <X size={13} color={colors.textMuted} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -61,40 +78,40 @@ export default function Cheatsheet({ onExecuteCommand }) {
       <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.bodyContent}>
         {filteredCategories.length === 0 ? (
           <View style={styles.emptyBox}>
-            <Text style={styles.emptyText}>No matching commands found for "{searchTerm}".</Text>
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('noMatchingCommands', 'No matching commands found for')} "{searchTerm}".</Text>
           </View>
         ) : (
           filteredCategories.map((cat, idx) => (
-            <View key={idx} style={styles.categoryCard}>
-              <Text style={styles.categoryTitle}>{cat.category}</Text>
+            <View key={idx} style={[styles.categoryCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <Text style={[styles.categoryTitle, { color: colors.primary }]}>{cat.category}</Text>
 
               <View style={styles.itemsList}>
                 {cat.items.map((item, itemIdx) => (
-                  <View key={itemIdx} style={styles.cmdRow}>
+                  <View key={itemIdx} style={[styles.cmdRow, { borderBottomColor: colors.cardBorder }]}>
                     <View style={styles.cmdInfo}>
-                      <Text style={styles.cmdText} selectable={true}>
+                      <Text style={[styles.cmdText, { color: colors.text }]} selectable={true}>
                         {item.cmd}
                       </Text>
-                      <Text style={styles.descText}>{item.desc}</Text>
+                      <Text style={[styles.descText, { color: colors.textSub }]}>{item.desc}</Text>
                     </View>
 
                     <View style={styles.actionsGroup}>
                       <TouchableOpacity
-                        style={styles.actionBtn}
+                        style={[styles.actionBtn, { backgroundColor: colors.primary }]}
                         onPress={() => onExecuteCommand(item.cmd)}
                         title="Run in CLI"
                       >
                         <Play size={11} color="#ffffff" />
-                        <Text style={styles.actionBtnText}>Run</Text>
+                        <Text style={styles.actionBtnText}>{t('runBtn', 'Run')}</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        style={styles.copyBtn}
+                        style={[styles.copyBtn, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
                         onPress={() => handleCopy(item.cmd)}
                       >
-                        <Copy size={11} color="#8b949e" />
-                        <Text style={styles.copyBtnText}>
-                          {copiedCmd === item.cmd ? 'Copied' : 'Copy'}
+                        <Copy size={11} color={colors.textMuted} />
+                        <Text style={[styles.copyBtnText, { color: colors.text }]}>
+                          {copiedCmd === item.cmd ? t('copiedBtn', 'Copied') : t('copyBtn', 'Copy')}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -117,6 +134,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#30363d',
     overflow: 'hidden',
+    minHeight: 0,
   },
   header: {
     backgroundColor: '#161b22',
@@ -128,12 +146,34 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
+  },
+  titleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  matchCountBadge: {
+    backgroundColor: '#21262d',
+    borderWidth: 1,
+    borderColor: '#30363d',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  matchCountText: {
+    color: '#58a6ff',
+    fontSize: 11,
+    fontWeight: '600',
   },
   titleText: {
     color: '#f0f6fc',
     fontSize: 15,
     fontWeight: '700',
+  },
+  clearSearchBtn: {
+    padding: 2,
   },
   searchBox: {
     flexDirection: 'row',
@@ -154,6 +194,7 @@ const styles = StyleSheet.create({
   },
   bodyScroll: {
     flex: 1,
+    minHeight: 0,
   },
   bodyContent: {
     padding: 14,

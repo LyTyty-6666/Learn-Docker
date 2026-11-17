@@ -18,8 +18,12 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { DOCKERFILE_TEMPLATES } from '../data/doctorData';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DockerfileOptimizer({ onExecuteCommand }) {
+  const { colors, isDark } = useTheme();
+  const { t } = useLanguage();
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
   const template = DOCKERFILE_TEMPLATES[selectedTemplateIndex];
 
@@ -52,15 +56,15 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
         <View style={styles.titleRow}>
-          <FileCode size={18} color="#58a6ff" />
-          <Text style={styles.titleText}>Dockerfile Server Linter & Optimizer</Text>
+          <FileCode size={18} color={colors.primary} />
+          <Text style={[styles.titleText, { color: colors.text }]}>{t('optimizerTitle', 'Dockerfile Server Linter & Optimizer')}</Text>
         </View>
-        <Text style={styles.subtitleText}>
-          Audit your server's Dockerfile for layer caching, non-root security, host binding, and small image footprints.
+        <Text style={[styles.subtitleText, { color: colors.textMuted }]}>
+          {t('optimizerSubtitle', "Audit your server's Dockerfile for layer caching, non-root security, host binding, and small image footprints.")}
         </Text>
 
         {/* Template Selectors */}
@@ -70,11 +74,19 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
             return (
               <TouchableOpacity
                 key={tmpl.id}
-                style={[styles.templateBtn, isSelected && styles.templateBtnActive]}
+                style={[
+                  styles.templateBtn,
+                  { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+                  isSelected && [styles.templateBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                ]}
                 onPress={() => handleSelectTemplate(idx)}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.templateBtnText, isSelected && styles.templateBtnTextActive]}>
+                <Text style={[
+                  styles.templateBtnText,
+                  { color: colors.textSub },
+                  isSelected && [styles.templateBtnTextActive, { color: colors.primary }]
+                ]}>
                   {tmpl.name}
                 </Text>
               </TouchableOpacity>
@@ -85,11 +97,11 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
 
       <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.bodyContent}>
         {/* Editor & Actions */}
-        <View style={styles.editorCard}>
-          <View style={styles.editorToolbar}>
+        <View style={[styles.editorCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+          <View style={[styles.editorToolbar, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
             <View style={styles.fileTab}>
-              <FileCode size={12} color="#58a6ff" />
-              <Text style={styles.fileTabText}>Dockerfile</Text>
+              <FileCode size={12} color={colors.primary} />
+              <Text style={[styles.fileTabText, { color: colors.text }]}>Dockerfile</Text>
               {isOptimized && (
                 <View style={styles.optimizedBadge}>
                   <Text style={styles.optimizedBadgeText}>OPTIMIZED</Text>
@@ -100,34 +112,37 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
             <View style={styles.toolbarActions}>
               {!isOptimized ? (
                 <TouchableOpacity
-                  style={styles.optimizeBtn}
+                  style={[styles.optimizeBtn, { backgroundColor: colors.primary }]}
                   onPress={handleApplyOptimization}
                   activeOpacity={0.8}
                 >
                   <Sparkles size={13} color="#ffffff" />
-                  <Text style={styles.optimizeBtnText}>Auto-Optimize Dockerfile</Text>
+                  <Text style={styles.optimizeBtnText}>{t('autoOptimizeBtn', 'Auto-Optimize Dockerfile')}</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  style={styles.resetBtn}
+                  style={[styles.resetBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}
                   onPress={handleReset}
                   activeOpacity={0.8}
                 >
-                  <RotateCcw size={12} color="#8b949e" />
-                  <Text style={styles.resetBtnText}>Restore Original</Text>
+                  <RotateCcw size={12} color={colors.textMuted} />
+                  <Text style={[styles.resetBtnText, { color: colors.text }]}>{t('restoreOriginalBtn', 'Restore Original')}</Text>
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity style={styles.copyBtn} onPress={handleCopy}>
-                <Copy size={12} color="#8b949e" />
-                <Text style={styles.copyBtnText}>{copied ? 'Copied!' : 'Copy'}</Text>
+              <TouchableOpacity style={[styles.copyBtn, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]} onPress={handleCopy}>
+                <Copy size={12} color={colors.textMuted} />
+                <Text style={[styles.copyBtnText, { color: colors.text }]}>{copied ? t('copiedBtn', 'Copied!') : t('copyBtn', 'Copy')}</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Dockerfile Code Editor Area */}
           <TextInput
-            style={styles.codeEditor}
+            style={[
+              styles.codeEditor,
+              { backgroundColor: isDark ? '#0d1117' : '#F3EDE4', color: isDark ? '#c9d1d9' : '#1C1917' }
+            ]}
             value={dockerfileCode}
             onChangeText={(txt) => {
               setDockerfileCode(txt);
@@ -141,11 +156,11 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
         </View>
 
         {/* Suggestion & Linter Findings */}
-        <View style={styles.suggestionsCard}>
+        <View style={[styles.suggestionsCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
           <View style={styles.suggestionsHeader}>
-            <Sparkles size={16} color="#e3b341" />
-            <Text style={styles.suggestionsTitle}>
-              Docker Doctor Findings ({template.suggestions.length})
+            <Sparkles size={16} color={colors.warning} />
+            <Text style={[styles.suggestionsTitle, { color: colors.text }]}>
+              {t('auditReportTitle', 'Docker Doctor Findings')} ({template.suggestions.length})
             </Text>
           </View>
 
@@ -158,19 +173,20 @@ export default function DockerfileOptimizer({ onExecuteCommand }) {
                   key={idx}
                   style={[
                     styles.suggestionItem,
+                    { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder },
                     isWarning && styles.suggestionWarning,
                     isSecurity && styles.suggestionSecurity,
                   ]}
                 >
                   <View style={styles.sugHeader}>
                     {isSecurity ? (
-                      <ShieldCheck size={14} color="#f85149" />
+                      <ShieldCheck size={14} color={colors.danger} />
                     ) : (
-                      <AlertTriangle size={14} color="#e3b341" />
+                      <AlertTriangle size={14} color={colors.warning} />
                     )}
-                    <Text style={styles.sugTitle}>{item.title}</Text>
+                    <Text style={[styles.sugTitle, { color: colors.text }]}>{item.title}</Text>
                   </View>
-                  <Text style={styles.sugDesc}>{item.desc}</Text>
+                  <Text style={[styles.sugDesc, { color: colors.textSub }]}>{item.desc}</Text>
                 </View>
               );
             })}
@@ -189,6 +205,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#30363d',
     overflow: 'hidden',
+    minHeight: 0,
   },
   header: {
     backgroundColor: '#161b22',
@@ -240,6 +257,7 @@ const styles = StyleSheet.create({
   },
   bodyScroll: {
     flex: 1,
+    minHeight: 0,
   },
   bodyContent: {
     padding: 14,

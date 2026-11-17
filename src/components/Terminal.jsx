@@ -18,17 +18,8 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
-
-const COMMON_COMMANDS = [
-  { label: 'List Running', cmd: 'docker ps' },
-  { label: 'List All', cmd: 'docker ps -a' },
-  { label: 'Run Nginx (8080:80)', cmd: 'docker run -d -p 8080:80 --name web-server nginx:alpine' },
-  { label: 'Test Web Server', cmd: 'curl http://localhost:8080' },
-  { label: 'Run Redis', cmd: 'docker run -d --name redis-cache redis:alpine' },
-  { label: 'Create Network', cmd: 'docker network create app-net' },
-  { label: 'Compose Up', cmd: 'docker compose up -d' },
-  { label: 'Inspect Logs', cmd: 'docker logs web-server' },
-];
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Terminal({
   terminalLines,
@@ -37,13 +28,30 @@ export default function Terminal({
   onClear,
 }) {
   const [inputVal, setInputVal] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
+
+  const { isDark, colors } = useTheme();
+  const { t } = useLanguage();
+
+  const commands = [
+    { label: t('cmdListRunning', 'List Running'), cmd: 'docker ps' },
+    { label: t('cmdListAll', 'List All'), cmd: 'docker ps -a' },
+    { label: t('cmdRunNginx', 'Run Nginx (8080:80)'), cmd: 'docker run -d -p 8080:80 --name web-server nginx:alpine' },
+    { label: t('cmdTestWeb', 'Test Web Server'), cmd: 'curl http://localhost:8080' },
+    { label: t('cmdRunRedis', 'Run Redis'), cmd: 'docker run -d --name redis-cache redis:alpine' },
+    { label: t('cmdCreateNet', 'Create Network'), cmd: 'docker network create app-net' },
+    { label: t('cmdComposeUp', 'Compose Up'), cmd: 'docker compose up -d' },
+    { label: t('cmdInspectLogs', 'Inspect Logs'), cmd: 'docker logs web-server' },
+  ];
 
   // Auto-scroll on new terminal line
   useEffect(() => {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
+      if (typeof scrollViewRef.current.scrollToEnd === 'function') {
+        scrollViewRef.current.scrollToEnd({ animated: true });
+      }
     }
   }, [terminalLines]);
 
@@ -68,7 +76,6 @@ export default function Terminal({
         if (next !== undefined) setInputVal(next);
       } else if (e.key === 'Tab') {
         e.preventDefault();
-        // Auto-complete suggestions
         const candidates = [
           'docker ps',
           'docker ps -a',
@@ -93,9 +100,9 @@ export default function Terminal({
   };
 
   return (
-    <View style={styles.terminalContainer}>
+    <View style={[styles.terminalContainer, { backgroundColor: colors.termBg, borderColor: colors.cardBorder }]}>
       {/* Terminal Title Bar */}
-      <View style={styles.titleBar}>
+      <View style={[styles.titleBar, { backgroundColor: colors.termFrame, borderBottomColor: colors.cardBorder }]}>
         <View style={styles.macButtons}>
           <View style={[styles.dot, styles.dotRed]} />
           <View style={[styles.dot, styles.dotYellow]} />
@@ -103,24 +110,25 @@ export default function Terminal({
         </View>
 
         <View style={styles.termTitleRow}>
-          <TermIcon size={13} color="#58a6ff" />
-          <Text style={styles.termTitleText}>root@docker-sandbox: ~ (bash 5.2)</Text>
+          <TermIcon size={13} color={colors.primary} />
+          <Text style={[styles.termTitleText, { color: colors.text }]}>{t('termUser', 'root@docker-sandbox: ~ (bash 5.2)')}</Text>
+          <Text style={[styles.termShortcutHint, { color: colors.textMuted }]}>{t('termShortcutHint', 'Tab ⇥ Complete  •  ↑↓ History')}</Text>
         </View>
 
         <View style={styles.termActions}>
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, { backgroundColor: colors.cardSubBg }]}
             onPress={() => onExecuteCommand('help')}
-            title="Help"
+            title={t('helpBtn', 'Help')}
           >
-            <HelpCircle size={13} color="#8b949e" />
+            <HelpCircle size={13} color={colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.actionBtn}
+            style={[styles.actionBtn, { backgroundColor: colors.cardSubBg }]}
             onPress={() => onExecuteCommand('clear')}
-            title="Clear"
+            title={t('clearBtn', 'Clear')}
           >
-            <Trash2 size={13} color="#8b949e" />
+            <Trash2 size={13} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       </View>
@@ -128,7 +136,7 @@ export default function Terminal({
       {/* Terminal Output Area */}
       <ScrollView
         ref={scrollViewRef}
-        style={styles.outputScroll}
+        style={[styles.outputScroll, { backgroundColor: colors.termBg }]}
         contentContainerStyle={styles.outputContent}
         showsVerticalScrollIndicator={true}
       >
@@ -160,56 +168,62 @@ export default function Terminal({
       </ScrollView>
 
       {/* Terminal Input Line */}
-      <View style={styles.inputArea}>
+      <View style={[styles.inputArea, { backgroundColor: colors.cardBg, borderTopColor: colors.cardBorder }]}>
         <View style={styles.inputPrompt}>
           <Text style={styles.promptSymbolGreen}>➜</Text>
-          <Text style={styles.promptPath}>docker</Text>
+          <Text style={[styles.promptPath, { color: colors.primary }]}>docker</Text>
         </View>
 
         <TextInput
           ref={inputRef}
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text },
+            isFocused && [styles.textInputFocused, { borderColor: colors.primary }]
+          ]}
           value={inputVal}
           onChangeText={setInputVal}
           onSubmitEditing={handleSubmit}
           onKeyPress={handleKeyDown}
-          placeholder="Type docker command (e.g. docker ps, docker run...)"
-          placeholderTextColor="#484f58"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={t('termInputPlaceholder', 'Type docker command (e.g. docker ps, docker run...)')}
+          placeholderTextColor={colors.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
           spellCheck={false}
         />
 
         <TouchableOpacity
-          style={styles.runButton}
+          style={[styles.runButton, { backgroundColor: colors.accent || '#238636' }]}
           onPress={handleSubmit}
           activeOpacity={0.8}
         >
           <Play size={13} color="#ffffff" />
-          <Text style={styles.runButtonText}>Run</Text>
+          <Text style={styles.runButtonText}>{t('runBtn', 'Run')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Quick Interactive Command Chips */}
-      <View style={styles.quickCommandsBar}>
+      <View style={[styles.quickCommandsBar, { backgroundColor: colors.cardBg, borderTopColor: colors.cardBorder }]}>
         <View style={styles.quickHeader}>
-          <Sparkles size={11} color="#58a6ff" />
-          <Text style={styles.quickHeaderText}>Quick Commands:</Text>
+          <Sparkles size={11} color={colors.primary} />
+          <Text style={[styles.quickHeaderText, { color: colors.textMuted }]}>{t('quickCommandsTitle', 'Quick Commands:')}</Text>
         </View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.quickChipsScroll}
         >
-          {COMMON_COMMANDS.map((item, idx) => (
+          {commands.map((item, idx) => (
             <TouchableOpacity
               key={idx}
-              style={styles.chip}
+              style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
               onPress={() => onExecuteCommand(item.cmd)}
               activeOpacity={0.7}
             >
-              <Text style={styles.chipLabel}>{item.label}</Text>
-              <Text style={styles.chipCmd}>{item.cmd}</Text>
+              <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
+              <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -221,20 +235,16 @@ export default function Terminal({
 const styles = StyleSheet.create({
   terminalContainer: {
     flex: 1,
-    backgroundColor: '#0d1117',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#30363d',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 380,
+    minHeight: 220,
   },
   titleBar: {
     height: 36,
-    backgroundColor: '#161b22',
     borderBottomWidth: 1,
-    borderBottomColor: '#21262d',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -258,10 +268,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   termTitleText: {
-    color: '#8b949e',
     fontSize: 11,
     fontFamily: 'Fira Code, monospace',
     fontWeight: '600',
+  },
+  termShortcutHint: {
+    fontSize: 10,
+    fontFamily: 'Fira Code, monospace',
+    marginLeft: 8,
   },
   termActions: {
     flexDirection: 'row',
@@ -270,13 +284,12 @@ const styles = StyleSheet.create({
   actionBtn: {
     padding: 4,
     borderRadius: 4,
-    backgroundColor: '#21262d',
   },
   outputScroll: {
     flex: 1,
-    backgroundColor: '#090d12',
     paddingHorizontal: 12,
     paddingVertical: 10,
+    minHeight: 0,
   },
   outputContent: {
     paddingBottom: 16,
@@ -298,7 +311,7 @@ const styles = StyleSheet.create({
     color: '#3fb950',
     fontFamily: 'Fira Code, monospace',
     fontSize: 12.5,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   promptColon: {
     color: '#8b949e',
@@ -312,7 +325,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   promptSymbol: {
-    color: '#f0f6fc',
+    color: '#8b949e',
     fontFamily: 'Fira Code, monospace',
     fontSize: 12.5,
     marginRight: 6,
@@ -321,37 +334,29 @@ const styles = StyleSheet.create({
     color: '#f0f6fc',
     fontFamily: 'Fira Code, monospace',
     fontSize: 12.5,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   outputDefault: {
     color: '#c9d1d9',
   },
-  outputInfo: {
-    color: '#58a6ff',
+  outputError: {
+    color: '#f85149',
     fontWeight: '600',
   },
   outputSuccess: {
     color: '#3fb950',
     fontWeight: '600',
   },
-  outputError: {
-    color: '#f85149',
-    fontWeight: '500',
+  outputInfo: {
+    color: '#58a6ff',
   },
   outputHint: {
     color: '#e3b341',
-    backgroundColor: 'rgba(227, 179, 65, 0.08)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginVertical: 3,
   },
   inputArea: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#161b22',
     borderTopWidth: 1,
-    borderTopColor: '#30363d',
     paddingHorizontal: 12,
     paddingVertical: 8,
     gap: 8,
@@ -368,32 +373,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   promptPath: {
-    color: '#58a6ff',
     fontFamily: 'Fira Code, monospace',
     fontSize: 12,
     fontWeight: '600',
   },
   textInput: {
     flex: 1,
-    color: '#f0f6fc',
     fontFamily: 'Fira Code, monospace',
     fontSize: 13,
     paddingVertical: 4,
     paddingHorizontal: 8,
-    backgroundColor: '#0d1117',
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#30363d',
     outlineStyle: 'none',
   },
+  textInputFocused: {},
   runButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#238636',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
     gap: 4,
+    cursor: 'pointer',
   },
   runButtonText: {
     color: '#ffffff',
@@ -401,9 +403,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   quickCommandsBar: {
-    backgroundColor: '#0d1117',
     borderTopWidth: 1,
-    borderTopColor: '#21262d',
     paddingVertical: 6,
     paddingHorizontal: 10,
   },
@@ -414,7 +414,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   quickHeaderText: {
-    color: '#8b949e',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -424,22 +423,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
-    backgroundColor: '#161b22',
     borderWidth: 1,
-    borderColor: '#30363d',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     flexDirection: 'column',
+    cursor: 'pointer',
   },
   chipLabel: {
     fontSize: 10,
-    color: '#58a6ff',
     fontWeight: '700',
   },
   chipCmd: {
     fontSize: 10,
-    color: '#8b949e',
     fontFamily: 'Fira Code, monospace',
   },
 });

@@ -4,11 +4,18 @@
 
 ---
 
+## 📚 Complete Docker Learning Roadmap & Handbook
+For a complete, in-depth text guide covering everything from container fundamentals to production CI/CD pipelines, read our official handbook:
+👉 **[DOCKER_LEARNING_GUIDE.md](file:///c:/Users/Ty/Desktop/New%20folder/DOCKER_LEARNING_GUIDE.md)**
+
+---
+
 ## 🌟 Key Features
 
 ### 1. 💻 Interactive Docker CLI Terminal Simulator
 - **Real-time Bash & Docker Shell**:
   - Command prompt (`root@docker-sandbox:~#`) with ANSI-like colors, tab auto-completion, and command history (Up/Down arrows).
+  - Keyboard shortcuts hint (`Tab: Complete`, `↑↓: History`, `Enter: Run`).
   - Simulates core Docker commands:
     - `docker run -d -p <host>:<container> --name <name> <image>`
     - `docker ps` and `docker ps -a` (with realistic formatted tabular output)
@@ -37,6 +44,7 @@
 - **Lab 4: Database Storage & Volume Persistence** (Create named volumes, mount to PostgreSQL).
 - **Lab 5: Full-Stack Docker Compose** (Spin up 3-tier stack: Nginx + Node Express + PostgreSQL with `docker compose up -d`).
 - Automatic step validation, confetti celebrations 🎉, and XP leveling system!
+- **Mobile Sub-Navigation**: On mobile screens, toggle smoothly between `Mission Steps` and the `Live Terminal`!
 
 ### 4. 🩺 Docker Doctor & Suggestion Engine
 - **Instant Diagnosis for Common Connection Failures**:
@@ -45,35 +53,37 @@
   - `getaddrinfo ENOTFOUND` (containers unable to reach each other by name on default bridge).
   - Container exits immediately (`Exited (0)` - PID 1 foreground issue).
   - `Cannot connect to Docker daemon (docker.sock)`.
-- **Interactive Host Port Inspector**: Type any host port (e.g., 8080, 3000, 5432) to diagnose which container owns it and get instant fix commands!
+- **Interactive Host Port Inspector**: Type any host port (or tap quick buttons: `:8080`, `:3000`, `:5432`, `:80`, `:6379`) to diagnose which container owns it and get instant fix commands!
 - **Side-by-side Code Diffs**: Visual bad vs. good code comparisons for Node.js, Python, Flask, FastAPI, and Django.
 
 ### 5. ⚡ Dockerfile Server Linter & Optimizer
-- Audits Dockerfiles for Node.js Express, Python FastAPI, etc.
+- Audits Dockerfiles for Node.js Express, Python FastAPI, Go, etc.
 - Detects heavy base images (`:latest` vs `:alpine`), layer cache invalidation, root user security risks, and missing healthchecks.
 - One-click **Auto-Optimize** button transforms the Dockerfile to production multi-stage standards.
 
 ### 6. 📖 Visual Learning Guide & Searchable Cheatsheet
-- Complete illustrated guides on Port Forwarding NAT rules, `0.0.0.0` vs `127.0.0.1`, `host.docker.internal`, and compose syntax.
-- Filterable, searchable cheatsheet with "Run in Terminal" and "Copy" actions.
+- Complete illustrated chapters on Port Forwarding NAT rules, `0.0.0.0` vs `127.0.0.1`, `host.docker.internal`, and compose syntax.
+- **New Chapter 6: The Master Roadmap: How to Learn Docker**.
+- **New Chapter 7: Real-World Docker Practice Projects**.
+- Filterable, searchable cheatsheet with real-time match counter, instant search clearing, and "Run in Terminal" actions.
 
 ### 7. 📱 Built with React Native (React Native for Web)
 - Built using authentic React Native components (`View`, `Text`, `StyleSheet`, `ScrollView`, `TextInput`, `TouchableOpacity`, `useWindowDimensions`, `Platform`).
 - Adapts responsively across:
-  - **Mobile (< 768px)**: Stacked cards, toggleable terminal/visualizer, touch-friendly quick keys.
-  - **Tablet (768px - 1024px)**: Adaptive 2-column view.
+  - **Mobile (< 768px)**: Stacked cards, toggleable terminal/visualizer, mobile sub-tabs for labs and doctor, touch-friendly quick keys.
+  - **Tablet (768px - 1024px)**: Adaptive 2-column view with quick controls.
   - **Desktop (> 1024px)**: Full side-by-side workbench with split view terminal and live topology map.
 
 ---
 
 ## 🚀 How to Run
 
-The app is already configured and running on `http://localhost:3000`!
+The app is configured to run on `http://localhost:3000`!
 
 To run or rebuild anytime:
 
 ```bash
-# Install dependencies (already installed)
+# Install dependencies
 npm install
 
 # Start development server
@@ -83,4 +93,4 @@ npm run dev
 npm run build
 ```
 
-Open `http://localhost:3000` in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.

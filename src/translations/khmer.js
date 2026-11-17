@@ -1,0 +1,231 @@
+export const TRANSLATIONS = {
+  en: {
+    // Header & App
+    brandTitle: 'DockMaster',
+    brandSubtitle: 'Interactive Docker & Server Learning Platform',
+    running: 'Running',
+    stopped: 'Stopped',
+    reset: 'Reset',
+    resetTooltip: 'Reset Docker sandbox to initial state',
+    pro: 'PRO',
+    theme: 'Theme',
+    lightWhiteCream: 'White-Cream',
+    darkTheme: 'Dark Mode',
+    language: 'Language',
+    
+    // Tabs
+    tabWorkspace: 'Terminal & Architecture',
+    tabLabs: 'Guided Labs',
+    tabDoctor: 'Docker Doctor',
+    tabOptimizer: 'Dockerfile Analyzer',
+    tabGuide: 'Visual Learning',
+    tabCheatsheet: 'Cheatsheet',
+    badge5Labs: '5 Labs',
+    badgeAiHelp: 'AI Help',
+
+    // Workspace
+    splitView: 'Split View (Both)',
+    cliTerminal: 'CLI Terminal',
+    topologyVisualizer: 'Topology Visualizer',
+    tipHelpText: '💡 Run commands in terminal to observe real-time topology and port updates!',
+
+    // Terminal
+    termUser: 'root@docker-sandbox: ~ (bash 5.2)',
+    termShortcutHint: 'Tab ⇥ Complete  •  ↑↓ History',
+    runBtn: 'Run',
+    clearBtn: 'Clear',
+    helpBtn: 'Help',
+    quickCommandsTitle: 'Quick Commands:',
+    termInputPlaceholder: 'Type docker command (e.g. docker ps, docker run...)',
+    
+    // Quick command labels
+    cmdListRunning: 'List Running',
+    cmdListAll: 'List All',
+    cmdRunNginx: 'Run Nginx (8080:80)',
+    cmdTestWeb: 'Test Web Server',
+    cmdRunRedis: 'Run Redis',
+    cmdCreateNet: 'Create Network',
+    cmdComposeUp: 'Compose Up',
+    cmdInspectLogs: 'Inspect Logs',
+
+    // Visualizer
+    visualizerTitle: 'Live Docker Connection & Topology Visualizer',
+    tabTopologyMap: 'Topology Map',
+    tabNetworks: 'Networks',
+    hostMachineZone: 'HOST MACHINE (Your Laptop / localhost)',
+    hostZoneDesc: 'External ports accessible in your web browser (http://localhost:PORT)',
+    noHostPorts: 'No host ports currently published (-p)',
+    trafficRouteExplanation: 'Traffic routed through Docker bridge to container',
+    containersZone: 'DOCKER CONTAINERS (SANDBOX)',
+    containersZoneDesc: 'Isolated container instances running with private IP addresses',
+    noContainersRunning: 'No containers running yet. Launch one from terminal or quick keys above!',
+    quickLaunchNginx: 'Quick Launch Nginx (:8080)',
+    bridgeNetworkTitle: 'Docker Virtual Bridge (docker0) — NAT Port Forwarding',
+    testHttpBtn: 'Test HTTP',
+    inspectBtn: 'Inspect',
+    logsBtn: 'Logs',
+    stopBtn: 'Stop',
+    startBtn: 'Start',
+
+    // Guided Labs
+    labsTitle: 'Docker Guided Missions & Challenges',
+    missionSteps: 'Mission Steps',
+    liveTerminal: 'Live Terminal',
+    runInTerminal: 'Run in Terminal',
+    showHint: 'Show Hint',
+    hideHint: 'Hide Hint',
+    hintLabel: '💡 Hint:',
+    xpBonus: 'XP',
+    labCompleted: '🎉 Fantastic! You completed all steps in this mission!',
+
+    // Docker Doctor
+    doctorTitle: 'Docker Doctor & Connection Diagnostic Advisor',
+    doctorSubtitle: 'Select a common Docker server problem or diagnose your running ports to get instant actionable suggestions.',
+    portDoctorTitle: 'Interactive Host Port Inspector',
+    portDoctorDesc: 'Wondering why a port isn\'t connecting? Enter any host port to diagnose its status against your Docker sandbox.',
+    diagnosePortBtn: 'Diagnose Port',
+    quickTestLabel: 'Quick Test:',
+    commonIssuesTitle: 'Common Docker Connection & Server Issues',
+    symptomLabel: '🚨 Observed Symptom:',
+    rootCausesTitle: 'Root Causes & Instant Fixes:',
+    recommendedFixLabel: '💡 Recommended Fix:',
+    antiPatternLabel: '❌ Anti-Pattern (Fails in Docker)',
+    correctSolutionLabel: '✅ Correct Solution (Works in Docker)',
+    tryFixCmd: 'Apply Fix in Terminal',
+
+    // Dockerfile Optimizer
+    optimizerTitle: 'Dockerfile Server Linter & Optimizer',
+    optimizerSubtitle: 'Audit your server\'s Dockerfile for layer caching, non-root security, host binding, and small image footprints.',
+    autoOptimizeBtn: 'Auto-Optimize Dockerfile',
+    restoreOriginalBtn: 'Restore Original',
+    copyBtn: 'Copy',
+    copiedBtn: 'Copied!',
+    auditReportTitle: 'Production Best Practice Audit',
+    auditPassedBadge: 'All 4 Production Checks Passed!',
+
+    // Cheatsheet
+    cheatsheetTitle: 'Interactive Docker Commands Cheatsheet',
+    searchCommandsPlaceholder: 'Search commands (e.g. port, logs, network, compose)...',
+    commandsLabel: 'Commands',
+    noMatchingCommands: 'No matching commands found for',
+
+    // Learning Guide
+    guideTitle: 'Docker & Server Connection Knowledge Base',
+    tryInTerminalBtn: 'Try in Terminal',
+  },
+
+  km: {
+    // Header & App
+    brandTitle: 'DockMaster',
+    brandSubtitle: 'វេទិការៀន Docker & Networking អន្តរកម្ម',
+    running: 'កំពុងដំណើរការ',
+    stopped: 'បានបញ្ឈប់',
+    reset: 'កំណត់ឡើងវិញ',
+    resetTooltip: 'កំណត់ប្រព័ន្ធ Docker Sandbox ទៅសភាពដើម',
+    pro: 'PRO',
+    theme: 'ស្បែកពណ៌',
+    lightWhiteCream: 'White-Cream ពន្លឺ',
+    darkTheme: 'ងងឹត Dark',
+    language: 'ភាសា',
+
+    // Tabs
+    tabWorkspace: 'ស្ថានីយ CLI & រចនាសម្ព័ន្ធ',
+    tabLabs: 'បេសកកម្មអនុវត្ត',
+    tabDoctor: 'វិភាគបញ្ហា Docker',
+    tabOptimizer: 'វិភាគ Dockerfile',
+    tabGuide: 'មេរៀន Docker',
+    tabCheatsheet: 'តារាងពាក្យបញ្ជា',
+    badge5Labs: '៥ បេសកកម្ម',
+    badgeAiHelp: 'ជំនួយ AI',
+
+    // Workspace
+    splitView: 'ទិដ្ឋភាពភ្លោះ (ទាំងពីរ)',
+    cliTerminal: 'ស្ថានីយ CLI',
+    topologyVisualizer: 'ផែនទីបណ្តាញ',
+    tipHelpText: '💡 វាយពាក្យបញ្ជាក្នុង Terminal ដើម្បីមើលការផ្លាស់ប្តូរបណ្តាញ និង Port ផ្ទាល់ៗ!',
+
+    // Terminal
+    termUser: 'root@docker-sandbox: ~ (bash 5.2)',
+    termShortcutHint: 'Tab ⇥ បំពេញស្វ័យប្រវត្តិ  •  ↑↓ ប្រវត្តិពាក្យបញ្ជា',
+    runBtn: 'ដំណើរការ',
+    clearBtn: 'សម្អាត',
+    helpBtn: 'ជំនួយ',
+    quickCommandsTitle: 'ពាក្យបញ្ជារហ័ស:',
+    termInputPlaceholder: 'វាយពាក្យបញ្ជា docker (ឧ. docker ps, docker run...)',
+
+    // Quick command labels
+    cmdListRunning: 'មើលកំពុងរត់',
+    cmdListAll: 'មើលទាំងអស់',
+    cmdRunNginx: 'រត់ Nginx (8080:80)',
+    cmdTestWeb: 'តេស្ត Web Server',
+    cmdRunRedis: 'រត់ Redis',
+    cmdCreateNet: 'បង្កើត Network',
+    cmdComposeUp: 'រត់ Compose',
+    cmdInspectLogs: 'ពិនិត្យ Logs',
+
+    // Visualizer
+    visualizerTitle: 'ផែនទីតភ្ជាប់បណ្តាញ Docker & Containers ផ្ទាល់',
+    tabTopologyMap: 'ផែនទីតភ្ជាប់',
+    tabNetworks: 'បណ្តាញ Networks',
+    hostMachineZone: 'ម៉ាស៊ីនដើម HOST MACHINE (កុំព្យូទ័ររបស់អ្នក / localhost)',
+    hostZoneDesc: 'Port ខាងក្រៅដែលអាចបើកតាម Browser បាន (http://localhost:PORT)',
+    noHostPorts: 'មិនទាន់មាន Port ខាងក្រៅត្រូវបានភ្ជាប់ទេ (-p)',
+    trafficRouteExplanation: 'ចរាចរណ៍ទិន្នន័យឆ្លងកាត់ Docker Bridge ទៅកាន់កុងតឺន័រ',
+    containersZone: 'កុងតឺន័រ DOCKER (DOCKER CONTAINERS)',
+    containersZoneDesc: 'កុងតឺន័រដាច់ដោយឡែកកំពុងដំណើរការជាមួយ IP ផ្ទាល់ខ្លួន',
+    noContainersRunning: 'មិនទាន់មានកុងតឺន័រណាមួយកំពុងរត់ទេ។ សាកល្បងដំណើរការមួយតាម Terminal ឬប៊ូតុងខាងលើ!',
+    quickLaunchNginx: 'ដំណើរការ Nginx រហ័ស (:8080)',
+    bridgeNetworkTitle: 'បណ្តាញនិម្មិត Docker Virtual Bridge (docker0) — NAT Port Forwarding',
+    testHttpBtn: 'សាកល្បង HTTP',
+    inspectBtn: 'ពិនិត្យ',
+    logsBtn: 'Logs',
+    stopBtn: 'បញ្ឈប់',
+    startBtn: 'ដំណើរការ',
+
+    // Guided Labs
+    labsTitle: 'បេសកកម្ម & លំហាត់អនុវត្ត Docker',
+    missionSteps: 'ជំហានបេសកកម្ម',
+    liveTerminal: 'ស្ថានីយ CLI ផ្ទាល់',
+    runInTerminal: 'ដំណើរការក្នុង Terminal',
+    showHint: 'បង្ហាញជំនួយ',
+    hideHint: 'លាក់ជំនួយ',
+    hintLabel: '💡 ជំនួយ / គន្លឹះ:',
+    xpBonus: 'XP',
+    labCompleted: '🎉 អបអរសាទរ! អ្នកបានបញ្ចប់គ្រប់ជំហាននៃបេសកកម្មនេះហើយ!',
+
+    // Docker Doctor
+    doctorTitle: 'Docker Doctor & ជំនួយការវិភាគបញ្ហាតភ្ជាប់',
+    doctorSubtitle: 'ជ្រើសរើសបញ្ហាដែលជួបប្រទះញឹកញាប់ ឬពិនិត្យ Port ម៉ាស៊ីនរបស់អ្នកដើម្បីទទួលបានដំណោះស្រាយភ្លាមៗ។',
+    portDoctorTitle: 'ឧបករណ៍ពិនិត្យ Host Port អន្តរកម្ម',
+    portDoctorDesc: 'ឆ្ងល់ថាម៉េចបាន Port មិនដំណើរការ? បញ្ចូលលេខ Host Port ណាមួយដើម្បីពិនិត្យស្ថានភាពក្នុង Docker Sandbox។',
+    diagnosePortBtn: 'វិភាគ Port',
+    quickTestLabel: 'សាកល្បងរហ័ស:',
+    commonIssuesTitle: 'បញ្ហាទូទៅនៃការតភ្ជាប់ Docker & Server',
+    symptomLabel: '🚨 រោគសញ្ញាដែលកើតឡើង:',
+    rootCausesTitle: 'មូលហេតុដើម & ដំណោះស្រាយភ្លាមៗ:',
+    recommendedFixLabel: '💡 ដំណោះស្រាយដែលណែនាំ:',
+    antiPatternLabel: '❌ ការសរសេរខុស (បរាជ័យក្នុង Docker)',
+    correctSolutionLabel: '✅ ដំណោះស្រាយត្រឹមត្រូវ (ដំណើរការក្នុង Docker)',
+    tryFixCmd: 'អនុវត្តដំណោះស្រាយក្នុង Terminal',
+
+    // Dockerfile Optimizer
+    optimizerTitle: 'ឧបករណ៍វិភាគ & បង្កើនប្រសិទ្ធភាព Dockerfile',
+    optimizerSubtitle: 'ពិនិត្យ Dockerfile របស់ Server អ្នកសម្រាប់ Layer Caching, សុវត្ថិភាព Non-root, និងទំហំតូចបំផុត។',
+    autoOptimizeBtn: 'បង្កើនប្រសិទ្ធភាពស្វ័យប្រវត្តិ',
+    restoreOriginalBtn: 'ត្រឡប់ទៅកូដដើមវិញ',
+    copyBtn: 'ចម្លង',
+    copiedBtn: 'បានចម្លង!',
+    auditReportTitle: 'របាយការណ៍ត្រួតពិនិត្យស្តង់ដារផលិតកម្ម',
+    auditPassedBadge: 'បានឆ្លងកាត់ការត្រួតពិនិត្យទាំង ៤ ដោយជោគជ័យ!',
+
+    // Cheatsheet
+    cheatsheetTitle: 'តារាងពាក្យបញ្ជា Docker អន្តរកម្ម',
+    searchCommandsPlaceholder: 'ស្វែងរកពាក្យបញ្ជា (ឧ. port, logs, network, compose)...',
+    commandsLabel: 'ពាក្យបញ្ជា',
+    noMatchingCommands: 'រកមិនឃើញពាក្យបញ្ជាដែលត្រូវនឹង',
+
+    // Learning Guide
+    guideTitle: 'ចំណេះដឹង & មេរៀន Docker Connection',
+    tryInTerminalBtn: 'សាកល្បងក្នុង Terminal',
+  },
+};
