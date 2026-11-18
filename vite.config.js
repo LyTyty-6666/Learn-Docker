@@ -7,11 +7,15 @@ function spaFallbackPlugin() {
   return {
     name: 'spa-fallback',
     closeBundle() {
-      const rootDir = typeof import.meta.dirname === 'string' ? import.meta.dirname : process.cwd();
-      const distIndex = path.resolve(rootDir, 'dist', 'index.html');
-      const dist200 = path.resolve(rootDir, 'dist', '200.html');
-      if (fs.existsSync(distIndex)) {
-        fs.copyFileSync(distIndex, dist200);
+      try {
+        const rootDir = process.cwd();
+        const distIndex = path.resolve(rootDir, 'dist', 'index.html');
+        const dist200 = path.resolve(rootDir, 'dist', '200.html');
+        if (fs.existsSync(distIndex) && !fs.existsSync(dist200)) {
+          fs.copyFileSync(distIndex, dist200);
+        }
+      } catch {
+        // Safe fallback - ignore if cannot copy
       }
     },
   };
