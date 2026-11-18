@@ -18,11 +18,13 @@ import {
 import { GUIDE_CHAPTERS } from '../data/guideData';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 
 export default function LearningGuide({ onExecuteCommand }) {
   const { colors, isDark } = useTheme();
   const { t } = useLanguage();
   const [activeChapterId, setActiveChapterId] = useState(GUIDE_CHAPTERS[0].id);
+  const { scrollRef: guideScrollRef } = useHorizontalScroll();
 
   const activeChapter = GUIDE_CHAPTERS.find(c => c.id === activeChapterId) || GUIDE_CHAPTERS[0];
 
@@ -35,6 +37,7 @@ export default function LearningGuide({ onExecuteCommand }) {
           <Text style={[styles.titleText, { color: colors.text }]}>{t('guideTitle', 'Docker & Server Connection Knowledge Base')}</Text>
         </View>
         <ScrollView
+          ref={guideScrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chaptersScroll}

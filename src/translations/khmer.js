@@ -37,6 +37,9 @@ export const TRANSLATIONS = {
     clearBtn: 'Clear',
     helpBtn: 'Help',
     quickCommandsTitle: 'Quick Commands:',
+    viewAll: 'View All',
+    compactView: 'Scrollable',
+    scrollHint: 'Scroll with wheel / ◄ ►',
     termInputPlaceholder: 'Type docker command (e.g. docker ps, docker run...)',
     
     // Quick command labels
@@ -156,6 +159,9 @@ export const TRANSLATIONS = {
     clearBtn: 'សម្អាត',
     helpBtn: 'ជំនួយ',
     quickCommandsTitle: 'ពាក្យបញ្ជារហ័ស:',
+    viewAll: 'មើលទាំងអស់',
+    compactView: 'បង្រួមជួរដេក',
+    scrollHint: 'រំកិលកង់ Mouse ឬ ◄ ►',
     termInputPlaceholder: 'វាយពាក្យបញ្ជា docker (ឧ. docker ps, docker run...)',
 
     // Quick command labels

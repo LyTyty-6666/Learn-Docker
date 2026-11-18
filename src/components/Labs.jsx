@@ -20,6 +20,7 @@ import {
 import { LABS } from '../data/labsData';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 
 export default function Labs({
   activeLabId,
@@ -30,6 +31,7 @@ export default function Labs({
   const [showHintStepId, setShowHintStepId] = useState(null);
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const { scrollRef: labsScrollRef } = useHorizontalScroll();
 
   const activeLab = LABS.find(l => l.id === activeLabId) || LABS[0];
 
@@ -50,6 +52,7 @@ export default function Labs({
           <Text style={[styles.titleText, { color: colors.text }]}>{t('labsTitle', 'Docker Guided Missions & Challenges')}</Text>
         </View>
         <ScrollView
+          ref={labsScrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.labsScroll}

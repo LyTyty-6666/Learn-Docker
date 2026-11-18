@@ -15,11 +15,15 @@ import {
   Trash2,
   HelpCircle,
   Copy,
+  ChevronLeft,
   ChevronRight,
   Sparkles,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 
 export default function Terminal({
   terminalLines,
@@ -29,11 +33,13 @@ export default function Terminal({
 }) {
   const [inputVal, setInputVal] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isWrapMode, setIsWrapMode] = useState(false);
   const scrollViewRef = useRef(null);
   const inputRef = useRef(null);
 
   const { isDark, colors } = useTheme();
   const { t } = useLanguage();
+  const { scrollRef: chipsScrollRef, scrollBy: scrollChipsBy, canScrollLeft, canScrollRight } = useHorizontalScroll();
 
   const commands = [
     { label: t('cmdListRunning', 'List Running'), cmd: 'docker ps' },
@@ -209,27 +215,102 @@ export default function Terminal({
 
       {/* Quick Interactive Command Chips */}
       <View style={[styles.quickCommandsBar, { backgroundColor: colors.cardBg, borderTopColor: colors.cardBorder }]}>
-        <View style={styles.quickHeader}>
-          <Sparkles size={11} color={colors.primary} />
-          <Text style={[styles.quickHeaderText, { color: colors.textMuted }]}>{t('quickCommandsTitle', 'Quick Commands:')}</Text>
+        <View style={styles.quickHeaderRow}>
+          <View style={styles.quickHeaderLeft}>
+            <Sparkles size={11} color={colors.primary} />
+            <Text style={[styles.quickHeaderText, { color: colors.textMuted }]}>
+              {t('quickCommandsTitle', 'Quick Commands:')}
+            </Text>
+            {!isWrapMode && (
+              <Text style={[styles.quickScrollHint, { color: colors.textMuted }]}>
+                {t('scrollHint', 'Scroll with wheel / ◄ ►')}
+              </Text>
+            )}
+          </View>
+
+          <TouchableOpacity
+            style={[styles.viewModeToggle, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+            onPress={() => setIsWrapMode(!isWrapMode)}
+            activeOpacity={0.7}
+            title={isWrapMode ? t('compactView', 'Scrollable') : t('viewAll', 'View All')}
+          >
+            {isWrapMode ? (
+              <>
+                <List size={11} color={colors.primary} />
+                <Text style={[styles.viewModeText, { color: colors.primary }]}>{t('compactView', 'Scrollable')}</Text>
+              </>
+            ) : (
+              <>
+                <LayoutGrid size={11} color={colors.textMuted} />
+                <Text style={[styles.viewModeText, { color: colors.textMuted }]}>{t('viewAll', 'View All')}</Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.quickChipsScroll}
-        >
-          {commands.map((item, idx) => (
+
+        {isWrapMode ? (
+          <View style={styles.chipsWrapContainer}>
+            {commands.map((item, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
+                onPress={() => onExecuteCommand(item.cmd)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
+                <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.chipsCarouselRow}>
             <TouchableOpacity
-              key={idx}
-              style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
-              onPress={() => onExecuteCommand(item.cmd)}
+              style={[
+                styles.scrollArrowBtn,
+                { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder },
+                !canScrollLeft && { opacity: 0.4 }
+              ]}
+              onPress={() => scrollChipsBy(-220)}
               activeOpacity={0.7}
+              title="Scroll Left"
             >
-              <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
-              <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
+              <ChevronLeft size={14} color={colors.text} />
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+
+            <ScrollView
+              ref={chipsScrollRef}
+              horizontal
+              showsHorizontalScrollIndicator={true}
+              style={styles.quickScrollView}
+              contentContainerStyle={styles.quickChipsScroll}
+            >
+              {commands.map((item, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
+                  onPress={() => onExecuteCommand(item.cmd)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
+                  <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={[
+                styles.scrollArrowBtn,
+                { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder },
+                !canScrollRight && { opacity: 0.4 }
+              ]}
+              onPress={() => scrollChipsBy(220)}
+              activeOpacity={0.7}
+              title="Scroll Right"
+            >
+              <ChevronRight size={14} color={colors.text} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -408,22 +489,71 @@ const styles = StyleSheet.create({
   quickCommandsBar: {
     borderTopWidth: 1,
     paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
   },
-  quickHeader: {
+  quickHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  quickHeaderLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginBottom: 4,
   },
   quickHeaderText: {
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
+  quickScrollHint: {
+    fontSize: 9.5,
+    fontFamily: 'Fira Code, monospace',
+    marginLeft: 6,
+  },
+  viewModeToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    cursor: 'pointer',
+  },
+  viewModeText: {
+    fontSize: 9.5,
+    fontWeight: '600',
+  },
+  chipsCarouselRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  scrollArrowBtn: {
+    width: 26,
+    height: 36,
+    borderRadius: 6,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  quickScrollView: {
+    flex: 1,
+  },
   quickChipsScroll: {
     flexDirection: 'row',
     gap: 8,
+    paddingVertical: 2,
+  },
+  chipsWrapContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    paddingVertical: 2,
   },
   chip: {
     borderWidth: 1,

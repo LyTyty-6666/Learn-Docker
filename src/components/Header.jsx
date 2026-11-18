@@ -20,6 +20,7 @@ import {
 import { useResponsive } from '../hooks/useResponsive';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 
 export default function Header({
   activeTab,
@@ -32,6 +33,7 @@ export default function Header({
   const { isMobile, isTablet, isDesktop, breakpoint } = useResponsive();
   const { isDark, toggleTheme, colors } = useTheme();
   const { lang, isKhmer, toggleLanguage, t } = useLanguage();
+  const { scrollRef: navScrollRef } = useHorizontalScroll();
 
   const tabs = [
     { id: 'workspace', labelKey: 'tabWorkspace', defaultLabel: 'Terminal & Architecture', icon: Terminal },
@@ -126,6 +128,7 @@ export default function Header({
       {/* Navigation Tabs (Scrollable on Mobile) */}
       <View style={[styles.navBar, { borderTopColor: colors.cardBorder }]}>
         <ScrollView
+          ref={navScrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.navScroll}
