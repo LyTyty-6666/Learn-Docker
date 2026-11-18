@@ -19,6 +19,9 @@ function spaFallbackPlugin() {
 
 export default defineConfig({
   plugins: [react(), spaFallbackPlugin()],
+  build: {
+    chunkSizeWarningLimit: 1000,
+  },
   resolve: {
     alias: {
       'react-native': 'react-native-web',
