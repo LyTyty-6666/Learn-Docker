@@ -6,16 +6,12 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import { styles } from './styles/app.styles';
+import { createStyles } from './styles/app.styles';
 import {
   Terminal as TermIcon,
   Radio,
-  Server,
   Award,
   Stethoscope,
-  FileCode,
-  BookOpen,
-  BookmarkCheck,
 } from 'lucide-react';
 import { useDockerSimulator } from './hooks/useDockerSimulator';
 import { useResponsive } from './hooks/useResponsive';
@@ -32,13 +28,14 @@ import Cheatsheet from './components/Cheatsheet';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('workspace');
-  const { isMobile, isTablet, isDesktop } = useResponsive();
+  const { isMobile, isDesktop } = useResponsive();
   const [workspaceMode, setWorkspaceMode] = useState(isMobile ? 'terminal' : 'both');
   const [mobileLabsTab, setMobileLabsTab] = useState('labs');
   const [mobileDoctorTab, setMobileDoctorTab] = useState('doctor');
 
   const { isDark, colors } = useTheme();
   const { t } = useLanguage();
+  const styles = createStyles(colors, isDark);
 
   // Sync workspace mode when transitioning between mobile and desktop
   React.useEffect(() => {
@@ -59,7 +56,6 @@ function AppContent() {
     activeLabId,
     setActiveLabId,
     xp,
-    setContainers,
   } = useDockerSimulator();
 
   const runningCount = containers.filter(c => c.status === 'running').length;
@@ -70,7 +66,7 @@ function AppContent() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.bg }]}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.headerBg} />
 
       {/* Main Header */}
@@ -84,26 +80,24 @@ function AppContent() {
       />
 
       {/* Main Content Area */}
-      <View style={[styles.mainContainer, { backgroundColor: colors.bg }]}>
+      <View style={styles.mainContainer}>
         {/* TAB 1: WORKSPACE (Terminal & Visualizer) */}
         {activeTab === 'workspace' && (
           <View style={styles.workspaceWrapper}>
             {/* View Toggle Bar */}
-            <View style={[styles.viewToggleBar, { backgroundColor: colors.toggleBarBg, borderColor: colors.cardBorder }]}>
+            <View style={styles.viewToggleBar}>
               <View style={styles.toggleButtonsGroup}>
                 {isDesktop && (
                   <TouchableOpacity
                     style={[
                       styles.toggleBtn,
-                      { backgroundColor: colors.cardSubBg },
-                      workspaceMode === 'both' && [styles.toggleBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                      workspaceMode === 'both' && styles.toggleBtnActive
                     ]}
                     onPress={() => setWorkspaceMode('both')}
                   >
                     <Text style={[
                       styles.toggleBtnText,
-                      { color: colors.textMuted },
-                      workspaceMode === 'both' && [styles.toggleBtnTextActive, { color: colors.primary }]
+                      workspaceMode === 'both' && styles.toggleBtnTextActive
                     ]}>
                       {t('splitView', 'Split View (Both)')}
                     </Text>
@@ -112,16 +106,14 @@ function AppContent() {
                 <TouchableOpacity
                   style={[
                     styles.toggleBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    workspaceMode === 'terminal' && [styles.toggleBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    workspaceMode === 'terminal' && styles.toggleBtnActive
                   ]}
                   onPress={() => setWorkspaceMode('terminal')}
                 >
                   <TermIcon size={12} color={workspaceMode === 'terminal' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.toggleBtnText,
-                    { color: colors.textMuted },
-                    workspaceMode === 'terminal' && [styles.toggleBtnTextActive, { color: colors.primary }]
+                    workspaceMode === 'terminal' && styles.toggleBtnTextActive
                   ]}>
                     {t('cliTerminal', 'CLI Terminal')}
                   </Text>
@@ -129,16 +121,14 @@ function AppContent() {
                 <TouchableOpacity
                   style={[
                     styles.toggleBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    workspaceMode === 'visualizer' && [styles.toggleBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    workspaceMode === 'visualizer' && styles.toggleBtnActive
                   ]}
                   onPress={() => setWorkspaceMode('visualizer')}
                 >
                   <Radio size={12} color={workspaceMode === 'visualizer' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.toggleBtnText,
-                    { color: colors.textMuted },
-                    workspaceMode === 'visualizer' && [styles.toggleBtnTextActive, { color: colors.primary }]
+                    workspaceMode === 'visualizer' && styles.toggleBtnTextActive
                   ]}>
                     {t('topologyVisualizer', 'Topology Visualizer')} ({runningCount})
                   </Text>
@@ -147,7 +137,7 @@ function AppContent() {
 
               {!isMobile && (
                 <View style={styles.tipHelp}>
-                  <Text style={[styles.tipHelpText, { color: colors.textMuted }]}>
+                  <Text style={styles.tipHelpText}>
                     {t('tipHelpText', '💡 Run commands in terminal to observe real-time topology and port updates!')}
                   </Text>
                 </View>
@@ -193,20 +183,18 @@ function AppContent() {
         {activeTab === 'labs' && (
           <View style={styles.tabFlexWrapper}>
             {isMobile && (
-              <View style={[styles.mobileSubNav, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <View style={styles.mobileSubNav}>
                 <TouchableOpacity
                   style={[
                     styles.mobileSubBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    mobileLabsTab === 'labs' && [styles.mobileSubBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    mobileLabsTab === 'labs' && styles.mobileSubBtnActive
                   ]}
                   onPress={() => setMobileLabsTab('labs')}
                 >
                   <Award size={13} color={mobileLabsTab === 'labs' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.mobileSubBtnText,
-                    { color: colors.textMuted },
-                    mobileLabsTab === 'labs' && [styles.mobileSubBtnTextActive, { color: colors.primary }]
+                    mobileLabsTab === 'labs' && styles.mobileSubBtnTextActive
                   ]}>
                     {t('missionSteps', 'Mission Steps')}
                   </Text>
@@ -214,16 +202,14 @@ function AppContent() {
                 <TouchableOpacity
                   style={[
                     styles.mobileSubBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    mobileLabsTab === 'terminal' && [styles.mobileSubBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    mobileLabsTab === 'terminal' && styles.mobileSubBtnActive
                   ]}
                   onPress={() => setMobileLabsTab('terminal')}
                 >
                   <TermIcon size={13} color={mobileLabsTab === 'terminal' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.mobileSubBtnText,
-                    { color: colors.textMuted },
-                    mobileLabsTab === 'terminal' && [styles.mobileSubBtnTextActive, { color: colors.primary }]
+                    mobileLabsTab === 'terminal' && styles.mobileSubBtnTextActive
                   ]}>
                     {t('liveTerminal', 'Live Terminal')}
                   </Text>
@@ -260,20 +246,18 @@ function AppContent() {
         {activeTab === 'doctor' && (
           <View style={styles.tabFlexWrapper}>
             {isMobile && (
-              <View style={[styles.mobileSubNav, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+              <View style={styles.mobileSubNav}>
                 <TouchableOpacity
                   style={[
                     styles.mobileSubBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    mobileDoctorTab === 'doctor' && [styles.mobileSubBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    mobileDoctorTab === 'doctor' && styles.mobileSubBtnActive
                   ]}
                   onPress={() => setMobileDoctorTab('doctor')}
                 >
                   <Stethoscope size={13} color={mobileDoctorTab === 'doctor' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.mobileSubBtnText,
-                    { color: colors.textMuted },
-                    mobileDoctorTab === 'doctor' && [styles.mobileSubBtnTextActive, { color: colors.primary }]
+                    mobileDoctorTab === 'doctor' && styles.mobileSubBtnTextActive
                   ]}>
                     {t('tabDoctor', 'Diagnostic Advisor')}
                   </Text>
@@ -281,16 +265,14 @@ function AppContent() {
                 <TouchableOpacity
                   style={[
                     styles.mobileSubBtn,
-                    { backgroundColor: colors.cardSubBg },
-                    mobileDoctorTab === 'terminal' && [styles.mobileSubBtnActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    mobileDoctorTab === 'terminal' && styles.mobileSubBtnActive
                   ]}
                   onPress={() => setMobileDoctorTab('terminal')}
                 >
                   <TermIcon size={13} color={mobileDoctorTab === 'terminal' ? colors.primary : colors.textMuted} />
                   <Text style={[
                     styles.mobileSubBtnText,
-                    { color: colors.textMuted },
-                    mobileDoctorTab === 'terminal' && [styles.mobileSubBtnTextActive, { color: colors.primary }]
+                    mobileDoctorTab === 'terminal' && styles.mobileSubBtnTextActive
                   ]}>
                     {t('liveTerminal', 'Live Terminal')}
                   </Text>
