@@ -6,15 +6,12 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
-import { styles } from '../styles/doctor.styles';
+import { createStyles } from '../styles/doctor.styles';
 import {
   Stethoscope,
   AlertTriangle,
   CheckCircle2,
-  HelpCircle,
   Play,
-  ArrowRight,
-  Code,
   Zap,
   ShieldCheck,
   Search,
@@ -29,6 +26,8 @@ export default function Doctor({
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useLanguage();
+  const styles = createStyles(colors, isDark);
+
   const [selectedIssueId, setSelectedIssueId] = useState(DIAGNOSTIC_ISSUES[0].id);
   const [testPortInput, setTestPortInput] = useState('8080');
   const [portDiagnosis, setPortDiagnosis] = useState(null);
@@ -71,33 +70,33 @@ export default function Doctor({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+    <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.doctorHeader, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
+      <View style={styles.doctorHeader}>
         <View style={styles.headerTitleRow}>
           <Stethoscope size={18} color={colors.primary} />
-          <Text style={[styles.headerTitleText, { color: colors.text }]}>{t('doctorTitle', 'Docker Doctor & Connection Diagnostic Advisor')}</Text>
+          <Text style={styles.headerTitleText}>{t('doctorTitle', 'Docker Doctor & Connection Diagnostic Advisor')}</Text>
         </View>
-        <Text style={[styles.headerSubtitleText, { color: colors.textMuted }]}>
+        <Text style={styles.headerSubtitleText}>
           {t('doctorSubtitle', 'Select a common Docker server problem or diagnose your running ports to get instant actionable suggestions.')}
         </Text>
       </View>
 
       <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
         {/* Quick Port Diagnostic Doctor Tool */}
-        <View style={[styles.portDoctorBox, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+        <View style={styles.portDoctorBox}>
           <View style={styles.portDoctorHeader}>
             <Zap size={15} color={colors.warning} />
-            <Text style={[styles.portDoctorTitle, { color: colors.text }]}>{t('portDoctorTitle', 'Interactive Host Port Inspector')}</Text>
+            <Text style={styles.portDoctorTitle}>{t('portDoctorTitle', 'Interactive Host Port Inspector')}</Text>
           </View>
-          <Text style={[styles.portDoctorDesc, { color: colors.textMuted }]}>
+          <Text style={styles.portDoctorDesc}>
             {t('portDoctorDesc', "Wondering why a port isn't connecting? Enter any host port to diagnose its status against your Docker sandbox.")}
           </Text>
 
-          <View style={[styles.portInputRow, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-            <Text style={[styles.portInputPrefix, { color: colors.textMuted }]}>http://localhost:</Text>
+          <View style={styles.portInputRow}>
+            <Text style={styles.portInputPrefix}>http://localhost:</Text>
             <TextInput
-              style={[styles.portInput, { color: colors.text }]}
+              style={styles.portInput}
               value={testPortInput}
               onChangeText={setTestPortInput}
               onSubmitEditing={handleDiagnosePort}
@@ -106,7 +105,7 @@ export default function Doctor({
               placeholderTextColor={colors.textMuted}
             />
             <TouchableOpacity
-              style={[styles.diagnoseBtn, { backgroundColor: colors.primary }]}
+              style={styles.diagnoseBtn}
               onPress={handleDiagnosePort}
               activeOpacity={0.8}
             >
@@ -117,7 +116,7 @@ export default function Doctor({
 
           {/* Quick Port Testing Chips */}
           <View style={styles.quickPortsRow}>
-            <Text style={[styles.quickPortsLabel, { color: colors.textMuted }]}>{t('quickTestLabel', 'Quick Test:')}</Text>
+            <Text style={styles.quickPortsLabel}>{t('quickTestLabel', 'Quick Test:')}</Text>
             {[8080, 3000, 5432, 80, 6379].map(p => {
               const isActive = testPortInput === String(p);
               return (
@@ -125,8 +124,7 @@ export default function Doctor({
                   key={p}
                   style={[
                     styles.quickPortChip,
-                    { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
-                    isActive && [styles.quickPortChipActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    isActive && styles.quickPortChipActive,
                   ]}
                   onPress={() => {
                     setTestPortInput(String(p));
@@ -162,8 +160,7 @@ export default function Doctor({
                 >
                   <Text style={[
                     styles.quickPortChipText,
-                    { color: colors.textSub },
-                    isActive && [styles.quickPortChipTextActive, { color: colors.primary }]
+                    isActive && styles.quickPortChipTextActive,
                   ]}>
                     :{p}
                   </Text>
@@ -176,7 +173,6 @@ export default function Doctor({
             <View
               style={[
                 styles.portDiagCard,
-                { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
                 portDiagnosis.status === 'error' && styles.portDiagCardError,
                 portDiagnosis.status === 'warning' && styles.portDiagCardWarning,
                 portDiagnosis.status === 'success' && styles.portDiagCardSuccess,
@@ -188,15 +184,15 @@ export default function Doctor({
                 ) : (
                   <AlertTriangle size={16} color={portDiagnosis.status === 'error' ? colors.danger : colors.warning} />
                 )}
-                <Text style={[styles.diagTitleText, { color: colors.text }]}>{portDiagnosis.title}</Text>
+                <Text style={styles.diagTitleText}>{portDiagnosis.title}</Text>
               </View>
-              <Text style={[styles.diagExplanation, { color: colors.textSub }]}>{portDiagnosis.explanation}</Text>
+              <Text style={styles.diagExplanation}>{portDiagnosis.explanation}</Text>
 
               {portDiagnosis.fixCmd && (
                 <View style={styles.diagFixRow}>
-                  <Text style={[styles.diagFixDesc, { color: colors.textMuted }]}>Suggested Action: {portDiagnosis.fixDesc}</Text>
+                  <Text style={styles.diagFixDesc}>Suggested Action: {portDiagnosis.fixDesc}</Text>
                   <TouchableOpacity
-                    style={[styles.runFixBtn, { backgroundColor: colors.primary }]}
+                    style={styles.runFixBtn}
                     onPress={() => onExecuteCommand(portDiagnosis.fixCmd)}
                   >
                     <Play size={11} color="#ffffff" />
@@ -210,7 +206,7 @@ export default function Doctor({
 
         {/* Issue Selector Pills */}
         <View style={styles.issueSection}>
-          <Text style={[styles.sectionHeading, { color: colors.text }]}>{t('commonIssuesTitle', 'Common Docker Connection & Server Issues')}</Text>
+          <Text style={styles.sectionHeading}>{t('commonIssuesTitle', 'Common Docker Connection & Server Issues')}</Text>
           <View style={styles.issueTabsList}>
             {DIAGNOSTIC_ISSUES.map(issue => {
               const isSelected = issue.id === selectedIssueId;
@@ -219,14 +215,13 @@ export default function Doctor({
                   key={issue.id}
                   style={[
                     styles.issueTab,
-                    { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
-                    isSelected && [styles.issueTabActive, { backgroundColor: colors.primaryBg, borderColor: colors.primary }]
+                    isSelected && styles.issueTabActive,
                   ]}
                   onPress={() => setSelectedIssueId(issue.id)}
                   activeOpacity={0.8}
                 >
                   <View style={styles.issueTabTop}>
-                    <Text style={[styles.issueCategory, { color: colors.textMuted }]}>{issue.category}</Text>
+                    <Text style={styles.issueCategory}>{issue.category}</Text>
                     <View style={[
                       styles.severityBadge,
                       issue.severity === 'Critical' ? styles.sevCritical : styles.sevHigh
@@ -236,8 +231,7 @@ export default function Doctor({
                   </View>
                   <Text style={[
                     styles.issueTabTitle,
-                    { color: colors.text },
-                    isSelected && [styles.issueTabTitleActive, { color: colors.primary }]
+                    isSelected && styles.issueTabTitleActive,
                   ]}>
                     {issue.title}
                   </Text>
@@ -248,55 +242,55 @@ export default function Doctor({
         </View>
 
         {/* Detailed Issue Breakdown & Suggestions */}
-        <View style={[styles.detailCard, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
-          <View style={[styles.detailHeader, { borderBottomColor: colors.cardBorder }]}>
+        <View style={styles.detailCard}>
+          <View style={styles.detailHeader}>
             <View style={styles.detailHeaderTop}>
-              <Text style={[styles.detailCategory, { color: colors.textMuted }]}>{activeIssue.category}</Text>
-              <Text style={[styles.detailSeverity, { color: colors.textMuted }]}>Severity: {activeIssue.severity}</Text>
+              <Text style={styles.detailCategory}>{activeIssue.category}</Text>
+              <Text style={styles.detailSeverity}>Severity: {activeIssue.severity}</Text>
             </View>
-            <Text style={[styles.detailTitle, { color: colors.text }]}>{activeIssue.title}</Text>
+            <Text style={styles.detailTitle}>{activeIssue.title}</Text>
           </View>
 
           {/* Symptom Box */}
-          <View style={[styles.symptomBox, { backgroundColor: isDark ? 'rgba(248, 81, 73, 0.1)' : '#FFF1F0', borderColor: isDark ? '#f8514933' : '#FFCCC7' }]}>
+          <View style={styles.symptomBox}>
             <Text style={styles.symptomLabel}>{t('symptomLabel', '🚨 Observed Symptom:')}</Text>
-            <Text style={[styles.symptomText, { color: colors.text }]}>{activeIssue.symptom}</Text>
+            <Text style={styles.symptomText}>{activeIssue.symptom}</Text>
           </View>
 
           {/* Root Causes & Solutions */}
           <View style={styles.causesList}>
-            <Text style={[styles.causesTitle, { color: colors.text }]}>{t('rootCausesTitle', 'Root Causes & Instant Fixes:')}</Text>
+            <Text style={styles.causesTitle}>{t('rootCausesTitle', 'Root Causes & Instant Fixes:')}</Text>
             {activeIssue.rootCauses.map((rc, idx) => (
-              <View key={idx} style={[styles.causeCard, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+              <View key={idx} style={styles.causeCard}>
                 <View style={styles.causeHeader}>
-                  <Text style={[styles.causeIndex, { color: colors.primary }]}>Cause #{idx + 1}:</Text>
-                  <Text style={[styles.causeReason, { color: colors.text }]}>{rc.reason}</Text>
+                  <Text style={styles.causeIndex}>Cause #{idx + 1}:</Text>
+                  <Text style={styles.causeReason}>{rc.reason}</Text>
                 </View>
-                <Text style={[styles.causeDetails, { color: colors.textSub }]}>{rc.details}</Text>
+                <Text style={styles.causeDetails}>{rc.details}</Text>
 
-                <View style={[styles.solutionBox, { backgroundColor: isDark ? 'rgba(56, 139, 253, 0.1)' : '#F0F5FF', borderColor: isDark ? '#388bfd33' : '#ADC6FF' }]}>
+                <View style={styles.solutionBox}>
                   <Text style={styles.solutionLabel}>{t('recommendedFixLabel', '💡 Recommended Fix:')}</Text>
-                  <Text style={[styles.solutionText, { color: colors.text }]}>{rc.solution}</Text>
+                  <Text style={styles.solutionText}>{rc.solution}</Text>
                 </View>
 
                 {rc.codeComparison && (
                   <View style={styles.codeCompareRow}>
-                    <View style={[styles.codeBox, styles.codeBoxBad, { backgroundColor: isDark ? '#161b22' : '#FFF2F0', borderColor: isDark ? '#f85149' : '#FFA39E' }]}>
+                    <View style={[styles.codeBox, styles.codeBoxBad]}>
                       <Text style={styles.codeBoxTitleBad}>{t('antiPatternLabel', '❌ Anti-Pattern (Fails in Docker)')}</Text>
-                      <Text style={[styles.codeSnippet, { color: colors.text }]}>{rc.codeComparison.bad}</Text>
+                      <Text style={styles.codeSnippet}>{rc.codeComparison.bad}</Text>
                     </View>
-                    <View style={[styles.codeBox, styles.codeBoxGood, { backgroundColor: isDark ? '#161b22' : '#F6FFED', borderColor: isDark ? '#3fb950' : '#B7EB8F' }]}>
+                    <View style={[styles.codeBox, styles.codeBoxGood]}>
                       <Text style={styles.codeBoxTitleGood}>{t('correctSolutionLabel', '✅ Correct Solution (Works in Docker)')}</Text>
-                      <Text style={[styles.codeSnippet, { color: colors.text }]}>{rc.codeComparison.good}</Text>
+                      <Text style={styles.codeSnippet}>{rc.codeComparison.good}</Text>
                     </View>
                   </View>
                 )}
 
                 {rc.commandFix && (
                   <View style={styles.cmdFixBox}>
-                    <Text style={[styles.cmdFixLabel, { color: colors.textMuted }]}>Fix Command:</Text>
+                    <Text style={styles.cmdFixLabel}>Fix Command:</Text>
                     <TouchableOpacity
-                      style={[styles.runCmdBtn, { backgroundColor: colors.primary }]}
+                      style={styles.runCmdBtn}
                       onPress={() => onExecuteCommand(rc.commandFix)}
                     >
                       <Play size={12} color="#ffffff" />
@@ -310,13 +304,13 @@ export default function Doctor({
 
           {/* Pro Tips */}
           {activeIssue.tips && activeIssue.tips.length > 0 && (
-            <View style={[styles.proTipsCard, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+            <View style={styles.proTipsCard}>
               <View style={styles.proTipsHeader}>
                 <ShieldCheck size={14} color={colors.success} />
-                <Text style={[styles.proTipsTitle, { color: colors.text }]}>Docker Doctor Best Practice Rules</Text>
+                <Text style={styles.proTipsTitle}>Docker Doctor Best Practice Rules</Text>
               </View>
               {activeIssue.tips.map((tip, idx) => (
-                <Text key={idx} style={[styles.tipItemText, { color: colors.textSub }]}>
+                <Text key={idx} style={styles.tipItemText}>
                   • {tip}
                 </Text>
               ))}

@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { styles } from '../styles/header.styles';
+import { createStyles } from '../styles/header.styles';
 import {
   Terminal,
-  Activity,
   Award,
   BookOpen,
   FileCode,
@@ -11,9 +10,6 @@ import {
   BookmarkCheck,
   RefreshCw,
   Layers,
-  Smartphone,
-  Tablet,
-  Monitor,
   Sun,
   Moon,
   Globe,
@@ -31,9 +27,10 @@ export default function Header({
   xp,
   onReset,
 }) {
-  const { isMobile, isTablet, isDesktop, breakpoint } = useResponsive();
+  const { isMobile } = useResponsive();
   const { isDark, toggleTheme, colors } = useTheme();
-  const { lang, isKhmer, toggleLanguage, t } = useLanguage();
+  const { isKhmer, toggleLanguage, t } = useLanguage();
+  const styles = createStyles(colors, isDark, isKhmer);
   const { scrollRef: navScrollRef } = useHorizontalScroll();
 
   const tabs = [
@@ -46,21 +43,21 @@ export default function Header({
   ];
 
   return (
-    <View style={[styles.headerContainer, { backgroundColor: colors.headerBg, borderBottomColor: colors.cardBorder }]}>
+    <View style={styles.headerContainer}>
       {/* Top Bar */}
       <View style={[styles.topRow, isMobile && styles.topRowMobile]}>
         <View style={styles.brandGroup}>
-          <View style={[styles.logoBadge, { backgroundColor: colors.primaryBg, borderColor: colors.primaryBorder }]}>
+          <View style={styles.logoBadge}>
             <Layers size={22} color={colors.primary} />
           </View>
           <View>
             <View style={styles.titleRow}>
-              <Text style={[styles.brandTitle, { color: colors.text }]}>{t('brandTitle', 'DockMaster')}</Text>
-              <View style={[styles.proBadge, { backgroundColor: colors.primary }]}>
+              <Text style={styles.brandTitle}>{t('brandTitle', 'DockMaster')}</Text>
+              <View style={styles.proBadge}>
                 <Text style={styles.proText}>PRO</Text>
               </View>
             </View>
-            <Text style={[styles.brandSubtitle, { color: colors.textMuted }]}>
+            <Text style={styles.brandSubtitle}>
               {t('brandSubtitle', 'Interactive Docker & Server Learning Platform')}
             </Text>
           </View>
@@ -69,35 +66,35 @@ export default function Header({
         {/* Stats, Language, Theme & Actions */}
         <View style={styles.statsRow}>
           {/* Active Containers Pill */}
-          <View style={[styles.statPill, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+          <View style={styles.statPill}>
             <View style={[styles.statusDot, runningCount > 0 ? styles.statusActive : styles.statusIdle]} />
-            <Text style={[styles.statText, { color: colors.textSub }]}>
-              <Text style={[styles.statBold, { color: colors.text }]}>{runningCount}</Text>/{totalCount} {t('running', 'Running')}
+            <Text style={styles.statText}>
+              <Text style={styles.statBold}>{runningCount}</Text>/{totalCount} {t('running', 'Running')}
             </Text>
           </View>
 
           {/* XP Pill */}
-          <View style={[styles.statPill, styles.xpPill, { backgroundColor: colors.warningBg, borderColor: colors.warning }]}>
+          <View style={[styles.statPill, styles.xpPill]}>
             <Award size={14} color="#e3b341" />
             <Text style={styles.xpText}>{xp} {t('xpBonus', 'XP')}</Text>
           </View>
 
           {/* Language Switcher (EN ↔ ខ្មែរ) */}
           <TouchableOpacity
-            style={[styles.actionPill, { backgroundColor: isKhmer ? 'rgba(9, 105, 218, 0.15)' : colors.cardSubBg, borderColor: isKhmer ? colors.primary : colors.cardBorder }]}
+            style={[styles.actionPill, styles.langPill]}
             onPress={toggleLanguage}
             activeOpacity={0.7}
             title={isKhmer ? 'ប្តូរទៅភាសាអង់គ្លេស' : 'Switch to Khmer language'}
           >
             <Globe size={13} color={isKhmer ? colors.primary : colors.textMuted} />
-            <Text style={[styles.pillText, { color: isKhmer ? colors.primary : colors.text, fontWeight: '700' }]}>
+            <Text style={styles.langPillText}>
               {isKhmer ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}
             </Text>
           </TouchableOpacity>
 
           {/* Theme Toggle Button (White-Cream Light ↔ Dark) */}
           <TouchableOpacity
-            style={[styles.actionPill, styles.themePill, { backgroundColor: !isDark ? '#FFF2D9' : colors.cardSubBg, borderColor: !isDark ? '#E5B869' : colors.cardBorder }]}
+            style={[styles.actionPill, styles.themePill]}
             onPress={toggleTheme}
             activeOpacity={0.7}
             title={isDark ? 'Switch to White-Cream Light Mode' : 'Switch to Dark Mode'}
@@ -108,7 +105,7 @@ export default function Header({
               <Moon size={13} color="#58a6ff" />
             )}
             {!isMobile && (
-              <Text style={[styles.pillText, { color: !isDark ? '#7A5200' : colors.textSub, fontWeight: '600' }]}>
+              <Text style={styles.themePillText}>
                 {!isDark ? (isKhmer ? 'White-Cream ពន្លឺ' : 'White-Cream') : (isKhmer ? 'ងងឹត Dark' : 'Dark')}
               </Text>
             )}
@@ -116,18 +113,18 @@ export default function Header({
 
           {/* Reset Sandbox */}
           <TouchableOpacity
-            style={[styles.resetButton, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+            style={styles.resetButton}
             onPress={onReset}
             activeOpacity={0.7}
           >
             <RefreshCw size={13} color={colors.textMuted} />
-            {!isMobile && <Text style={[styles.resetText, { color: colors.textMuted }]}>{t('reset', 'Reset')}</Text>}
+            {!isMobile && <Text style={styles.resetText}>{t('reset', 'Reset')}</Text>}
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Navigation Tabs (Scrollable on Mobile) */}
-      <View style={[styles.navBar, { borderTopColor: colors.cardBorder }]}>
+      <View style={styles.navBar}>
         <ScrollView
           ref={navScrollRef}
           horizontal
@@ -145,24 +142,22 @@ export default function Header({
                 onPress={() => setActiveTab(tab.id)}
                 style={[
                   styles.navTab,
-                  isActive && [styles.navTabActive, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.primary }]
+                  isActive && styles.navTabActive
                 ]}
                 activeOpacity={0.8}
               >
                 <Icon size={16} color={isActive ? colors.primary : colors.textMuted} />
-                <Text style={[styles.navLabel, { color: colors.textMuted }, isActive && [styles.navLabelActive, { color: colors.text }]]}>
+                <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
                   {label}
                 </Text>
                 {badge && (
                   <View style={[
                     styles.tabBadge,
-                    { backgroundColor: colors.cardBorder },
-                    isActive && [styles.tabBadgeActive, { backgroundColor: colors.primaryBg }]
+                    isActive && styles.tabBadgeActive
                   ]}>
                     <Text style={[
                       styles.tabBadgeText,
-                      { color: colors.textMuted },
-                      isActive && [styles.tabBadgeTextActive, { color: colors.primary }]
+                      isActive && styles.tabBadgeTextActive
                     ]}>
                       {badge}
                     </Text>

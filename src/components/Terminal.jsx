@@ -7,7 +7,6 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { styles } from '../styles/terminal.styles';
 import {
   Terminal as TermIcon,
   Play,
@@ -24,6 +23,7 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
+import { createStyles } from '../styles/terminal.styles';
 
 export default function Terminal({
   terminalLines,
@@ -39,6 +39,7 @@ export default function Terminal({
 
   const { isDark, colors } = useTheme();
   const { t } = useLanguage();
+  const styles = createStyles(colors);
   const { scrollRef: chipsScrollRef, scrollBy: scrollChipsBy, canScrollLeft, canScrollRight } = useHorizontalScroll();
 
   const commands = [
@@ -109,9 +110,9 @@ export default function Terminal({
   };
 
   return (
-    <View style={[styles.terminalContainer, { backgroundColor: colors.termBg, borderColor: colors.cardBorder }]}>
+    <View style={styles.terminalContainer}>
       {/* Terminal Title Bar */}
-      <View style={[styles.titleBar, { backgroundColor: colors.termFrame, borderBottomColor: colors.cardBorder }]}>
+      <View style={styles.titleBar}>
         <View style={styles.macButtons}>
           <View style={[styles.dot, styles.dotRed]} />
           <View style={[styles.dot, styles.dotYellow]} />
@@ -120,20 +121,20 @@ export default function Terminal({
 
         <View style={styles.termTitleRow}>
           <TermIcon size={13} color={colors.primary} />
-          <Text style={[styles.termTitleText, { color: colors.text }]}>{t('termUser', 'root@docker-sandbox: ~ (bash 5.2)')}</Text>
-          <Text style={[styles.termShortcutHint, { color: colors.textMuted }]}>{t('termShortcutHint', 'Tab ⇥ Complete  •  ↑↓ History')}</Text>
+          <Text style={styles.termTitleText}>{t('termUser', 'root@docker-sandbox: ~ (bash 5.2)')}</Text>
+          <Text style={styles.termShortcutHint}>{t('termShortcutHint', 'Tab ⇥ Complete  •  ↑↓ History')}</Text>
         </View>
 
         <View style={styles.termActions}>
           <TouchableOpacity
-            style={[styles.actionBtn, { backgroundColor: colors.cardSubBg }]}
+            style={styles.actionBtn}
             onPress={() => onExecuteCommand('help')}
             title={t('helpBtn', 'Help')}
           >
             <HelpCircle size={13} color={colors.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionBtn, { backgroundColor: colors.cardSubBg }]}
+            style={styles.actionBtn}
             onPress={() => onExecuteCommand('clear')}
             title={t('clearBtn', 'Clear')}
           >
@@ -145,7 +146,7 @@ export default function Terminal({
       {/* Terminal Output Area */}
       <ScrollView
         ref={scrollViewRef}
-        style={[styles.outputScroll, { backgroundColor: colors.termBg }]}
+        style={styles.outputScroll}
         contentContainerStyle={styles.outputContent}
         showsVerticalScrollIndicator={true}
       >
@@ -177,19 +178,15 @@ export default function Terminal({
       </ScrollView>
 
       {/* Terminal Input Line */}
-      <View style={[styles.inputArea, { backgroundColor: colors.cardBg, borderTopColor: colors.cardBorder }]}>
+      <View style={styles.inputArea}>
         <View style={styles.inputPrompt}>
           <Text style={styles.promptSymbolGreen}>➜</Text>
-          <Text style={[styles.promptPath, { color: colors.primary }]}>docker</Text>
+          <Text style={styles.promptPath}>docker</Text>
         </View>
 
         <TextInput
           ref={inputRef}
-          style={[
-            styles.textInput,
-            { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text },
-            isFocused && [styles.textInputFocused, { borderColor: colors.primary }]
-          ]}
+          style={[styles.textInput, isFocused && styles.textInputFocused]}
           value={inputVal}
           onChangeText={setInputVal}
           onSubmitEditing={handleSubmit}
@@ -204,7 +201,7 @@ export default function Terminal({
         />
 
         <TouchableOpacity
-          style={[styles.runButton, { backgroundColor: colors.accent || '#238636' }]}
+          style={styles.runButton}
           onPress={handleSubmit}
           activeOpacity={0.8}
         >
@@ -214,22 +211,22 @@ export default function Terminal({
       </View>
 
       {/* Quick Interactive Command Chips */}
-      <View style={[styles.quickCommandsBar, { backgroundColor: colors.cardBg, borderTopColor: colors.cardBorder }]}>
+      <View style={styles.quickCommandsBar}>
         <View style={styles.quickHeaderRow}>
           <View style={styles.quickHeaderLeft}>
             <Sparkles size={11} color={colors.primary} />
-            <Text style={[styles.quickHeaderText, { color: colors.textMuted }]}>
+            <Text style={styles.quickHeaderText}>
               {t('quickCommandsTitle', 'Quick Commands:')}
             </Text>
             {!isWrapMode && (
-              <Text style={[styles.quickScrollHint, { color: colors.textMuted }]}>
+              <Text style={styles.quickScrollHint}>
                 {t('scrollHint', 'Scroll with wheel / ◄ ►')}
               </Text>
             )}
           </View>
 
           <TouchableOpacity
-            style={[styles.viewModeToggle, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+            style={styles.viewModeToggle}
             onPress={() => setIsWrapMode(!isWrapMode)}
             activeOpacity={0.7}
             title={isWrapMode ? t('compactView', 'Scrollable') : t('viewAll', 'View All')}
@@ -237,12 +234,12 @@ export default function Terminal({
             {isWrapMode ? (
               <>
                 <List size={11} color={colors.primary} />
-                <Text style={[styles.viewModeText, { color: colors.primary }]}>{t('compactView', 'Scrollable')}</Text>
+                <Text style={styles.viewModeTextActive}>{t('compactView', 'Scrollable')}</Text>
               </>
             ) : (
               <>
                 <LayoutGrid size={11} color={colors.textMuted} />
-                <Text style={[styles.viewModeText, { color: colors.textMuted }]}>{t('viewAll', 'View All')}</Text>
+                <Text style={styles.viewModeText}>{t('viewAll', 'View All')}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -253,23 +250,19 @@ export default function Terminal({
             {commands.map((item, idx) => (
               <TouchableOpacity
                 key={idx}
-                style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
+                style={styles.chip}
                 onPress={() => onExecuteCommand(item.cmd)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
-                <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
+                <Text style={styles.chipLabel}>{item.label}</Text>
+                <Text style={styles.chipCmd}>{item.cmd}</Text>
               </TouchableOpacity>
             ))}
           </View>
         ) : (
           <View style={styles.chipsCarouselRow}>
             <TouchableOpacity
-              style={[
-                styles.scrollArrowBtn,
-                { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder },
-                !canScrollLeft && { opacity: 0.4 }
-              ]}
+              style={[styles.scrollArrowBtn, !canScrollLeft && { opacity: 0.4 }]}
               onPress={() => scrollChipsBy(-220)}
               activeOpacity={0.7}
               title="Scroll Left"
@@ -287,22 +280,18 @@ export default function Terminal({
               {commands.map((item, idx) => (
                 <TouchableOpacity
                   key={idx}
-                  style={[styles.chip, { backgroundColor: colors.chipBg, borderColor: colors.chipBorder }]}
+                  style={styles.chip}
                   onPress={() => onExecuteCommand(item.cmd)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[styles.chipLabel, { color: colors.primary }]}>{item.label}</Text>
-                  <Text style={[styles.chipCmd, { color: colors.textSub }]}>{item.cmd}</Text>
+                  <Text style={styles.chipLabel}>{item.label}</Text>
+                  <Text style={styles.chipCmd}>{item.cmd}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
 
             <TouchableOpacity
-              style={[
-                styles.scrollArrowBtn,
-                { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder },
-                !canScrollRight && { opacity: 0.4 }
-              ]}
+              style={[styles.scrollArrowBtn, !canScrollRight && { opacity: 0.4 }]}
               onPress={() => scrollChipsBy(220)}
               activeOpacity={0.7}
               title="Scroll Right"

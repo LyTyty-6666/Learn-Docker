@@ -5,14 +5,12 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { styles } from '../styles/labs.styles';
+import { createStyles } from '../styles/labs.styles';
 import {
   Award,
   CheckCircle2,
   Circle,
   HelpCircle,
-  ChevronRight,
-  Terminal,
   Play,
   Sparkles,
   Lock,
@@ -31,6 +29,7 @@ export default function Labs({
   const [showHintStepId, setShowHintStepId] = useState(null);
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const styles = createStyles(colors);
   const { scrollRef: labsScrollRef } = useHorizontalScroll();
 
   const activeLab = LABS.find(l => l.id === activeLabId) || LABS[0];
@@ -44,12 +43,12 @@ export default function Labs({
   const progressPct = Math.round((passedCount / totalSteps) * 100);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.cardBg, borderColor: colors.cardBorder }]}>
+    <View style={styles.container}>
       {/* Lab Tabs / Selector */}
-      <View style={[styles.labsHeader, { backgroundColor: colors.cardSubBg, borderBottomColor: colors.cardBorder }]}>
+      <View style={styles.labsHeader}>
         <View style={styles.titleRow}>
           <Award size={18} color="#e3b341" />
-          <Text style={[styles.titleText, { color: colors.text }]}>{t('labsTitle', 'Docker Guided Missions & Challenges')}</Text>
+          <Text style={styles.titleText}>{t('labsTitle', 'Docker Guided Missions & Challenges')}</Text>
         </View>
         <ScrollView
           ref={labsScrollRef}
@@ -57,7 +56,7 @@ export default function Labs({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.labsScroll}
         >
-          {LABS.map((lab, index) => {
+          {LABS.map((lab) => {
             const isSelected = lab.id === activeLabId;
             const labPassed = lab.steps.every(s =>
               completedSteps.has(`${lab.id}-${s.id}`)
@@ -67,7 +66,6 @@ export default function Labs({
                 key={lab.id}
                 style={[
                   styles.labTab,
-                  { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
                   isSelected && styles.labTabActive
                 ]}
                 onPress={() => setActiveLabId(lab.id)}
@@ -83,7 +81,13 @@ export default function Labs({
                     <Text style={styles.labXp}>+{lab.xp} XP</Text>
                   )}
                 </View>
-                <Text style={[styles.labTabTitle, { color: colors.textSub }, isSelected && [styles.labTabTitleActive, { color: colors.text }]]} numberOfLines={1}>
+                <Text
+                  style={[
+                    styles.labTabTitle,
+                    isSelected && styles.labTabTitleActive
+                  ]}
+                  numberOfLines={1}
+                >
                   {lab.title.split(':')[0]}
                 </Text>
               </TouchableOpacity>
@@ -95,11 +99,11 @@ export default function Labs({
       {/* Active Lab Body */}
       <ScrollView style={styles.bodyScroll} contentContainerStyle={styles.bodyContent}>
         {/* Lab Overview Card */}
-        <View style={[styles.overviewCard, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}>
+        <View style={styles.overviewCard}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={[styles.overviewTitle, { color: colors.text }]}>{activeLab.title}</Text>
-              <Text style={[styles.overviewDesc, { color: colors.textMuted }]}>{activeLab.description}</Text>
+              <Text style={styles.overviewTitle}>{activeLab.title}</Text>
+              <Text style={styles.overviewDesc}>{activeLab.description}</Text>
             </View>
             <View style={styles.xpBadge}>
               <Award size={14} color="#e3b341" />
@@ -110,12 +114,12 @@ export default function Labs({
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressLabels}>
-              <Text style={[styles.progressLabel, { color: colors.textMuted }]}>{t('missionSteps', 'Mission Progress')}</Text>
-              <Text style={[styles.progressValue, { color: colors.primary }]}>
+              <Text style={styles.progressLabel}>{t('missionSteps', 'Mission Progress')}</Text>
+              <Text style={styles.progressValue}>
                 {passedCount} / {totalSteps} {t('missionSteps', 'Steps')} ({progressPct}%)
               </Text>
             </View>
-            <View style={[styles.progressTrack, { backgroundColor: colors.cardBorder }]}>
+            <View style={styles.progressTrack}>
               <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
             </View>
           </View>
@@ -132,7 +136,7 @@ export default function Labs({
 
         {/* Steps List */}
         <View style={styles.stepsList}>
-          <Text style={[styles.stepsSectionTitle, { color: colors.text }]}>{t('missionSteps', 'Step-by-Step Objectives')}</Text>
+          <Text style={styles.stepsSectionTitle}>{t('missionSteps', 'Step-by-Step Objectives')}</Text>
 
           {activeLab.steps.map((step, idx) => {
             const stepKey = `${activeLab.id}-${step.id}`;
@@ -147,9 +151,8 @@ export default function Labs({
                 key={step.id}
                 style={[
                   styles.stepCard,
-                  { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
                   isCompleted && styles.stepCardCompleted,
-                  isCurrent && [styles.stepCardCurrent, { borderColor: colors.primary }],
+                  isCurrent && styles.stepCardCurrent,
                   isLocked && styles.stepCardLocked,
                 ]}
               >
@@ -166,10 +169,10 @@ export default function Labs({
                   </View>
 
                   <View style={styles.stepTitleBox}>
-                    <Text style={[styles.stepNumText, { color: colors.primary }, isCompleted && styles.textCompleted]}>
+                    <Text style={[styles.stepNumText, isCompleted && styles.textCompleted]}>
                       {t('step', 'Step')} {idx + 1}
                     </Text>
-                    <Text style={[styles.stepInstruction, { color: colors.text }, isCompleted && styles.textCompleted]}>
+                    <Text style={[styles.stepInstruction, isCompleted && styles.textCompleted]}>
                       {step.instruction}
                     </Text>
                   </View>
@@ -178,18 +181,18 @@ export default function Labs({
                 {/* Hint & Run Buttons */}
                 <View style={styles.stepActionRow}>
                   <TouchableOpacity
-                    style={[styles.hintToggle, { backgroundColor: colors.cardSubBg, borderColor: colors.cardBorder }]}
+                    style={styles.hintToggle}
                     onPress={() => setShowHintStepId(isHintOpen ? null : step.id)}
                   >
                     <HelpCircle size={12} color={colors.textMuted} />
-                    <Text style={[styles.hintToggleText, { color: colors.textMuted }]}>
+                    <Text style={styles.hintToggleText}>
                       {isHintOpen ? t('hideHint', 'Hide Hint') : t('showHint', 'Show Hint / Command')}
                     </Text>
                   </TouchableOpacity>
 
                   {step.expectedCommand && (
                     <TouchableOpacity
-                      style={[styles.autoRunBtn, { backgroundColor: colors.accent || '#238636' }]}
+                      style={styles.autoRunBtn}
                       onPress={() => onExecuteCommand(step.expectedCommand)}
                     >
                       <Play size={11} color="#ffffff" />
@@ -200,9 +203,9 @@ export default function Labs({
 
                 {/* Expanded Hint Box */}
                 {isHintOpen && (
-                  <View style={[styles.hintContentBox, { backgroundColor: colors.cardSubBg, borderColor: colors.warning }]}>
-                    <Text style={[styles.hintLabel, { color: colors.warning }]}>{t('hintLabel', '💡 Suggested Command:')}</Text>
-                    <Text style={[styles.hintCode, { color: colors.text }]} selectable={true}>
+                  <View style={styles.hintContentBox}>
+                    <Text style={styles.hintLabel}>{t('hintLabel', '💡 Suggested Command:')}</Text>
+                    <Text style={styles.hintCode} selectable={true}>
                       {step.expectedCommand || step.hint}
                     </Text>
                   </View>
